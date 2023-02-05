@@ -1,0 +1,14 @@
+Description;Chip loads - 1/8“ Carbide-End-Mills – 0.5-3.0mm;;;;;
+Remark;n/a;;;;;
+Author;Erik Schuster;;;;;
+Data;;;;;;
+Material\Diameter;d0,50;d1,00;d1,50;d2,00;d2,50;d3,00
+Cast-Aluminium >6% Si;0,01;0,02;0,04;0,05;0,06;0,08
+Aluminium, forging alloy;0,01;0,02;0,04;0,05;0,06;0,08
+Plastic, soft;0,08;0,15;0,30;0,40;0,50;0,60
+Plastic, hard;0,04;0,06;0,10;0,12;0,15;0,18
+Wood, hard;0,08;0,10;0,12;0,15;0,18;0,20
+Wood, soft;0,10;0,12;0,15;0,20;0,25;0,30
+MDF;0,10;0,12;0,15;0,17;0,20;0,25
+Brass, Copper, Bronze;0,03;0,04;0,06;0,08;0,12;0,15
+Steel;0,01;0,03;0,04;0,06;0,08;0,10

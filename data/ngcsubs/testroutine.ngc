@@ -1,0 +1,22 @@
+(info: testroutine)
+o<testroutine>sub
+
+#<Parameter 1> = #1 (Description parameter 1)
+   #<Parameter 2> = #2 ( Description parameter 2 )
+#<Parameter 3>      =       #3      (Description parameter 3)
+#<Parameter 4> = #4 ()
+#<Parameter 5> = #5
+#<Parameter 6> = # 6 (Description parameter 6)
+#<Parameter 7>=#7(Description parameter 7)
+#<Parameter 8> = [#8/2]  (Description parameter 8)
+#<Parameter 9> =
+#<Parameter 10>
+#<x1> = #11
+
+T#<Parameter 1> M6
+G43
+F#<Parameter 2>
+M3 S#<Parameter 3>
+(do something...)
+
+o<testroutine>endsub

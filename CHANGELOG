@@ -1,0 +1,41 @@
+**Changelog for the SimpleGcodeGenerator**
+
+* Version 3.6.0
+
+  * Bugfix main gui: Selection of list-objects was discarded.
+  * Added ncclass ``Counterbore`` (not finished yet).
+  * Added feeds and speeds frame.
+  * Paths are now read from ini-file.
+  * Default values are now read from ini-file.
+  * Added a pdf manual.
+  * Better filename handling.
+  * Key-bindings for object-list added.
+  * Some minor bugfixes and optimisations.
+
+* Version 3.5.0
+
+  * Added ncclass ``Subroutine`` which makes is possible to include LinuxCNC subroutines.
+  * Removed check if AXIS is running to reduce computing ressources.
+  * Some minor bugfixes.
+
+* Version 3.4.0
+
+  * Uses less computing resources.
+  * Faster display of edit frames.
+  * Added tool selection from LinuxCNC tool table.
+  * Added dialog to edit object specific pre- and postamble.
+  * Some minor bugfixes.
+  
+* Version 3.3.1
+
+  * Bugfix: Wrong encoding of source files.
+
+* Version 3.3.0
+
+* Version 3.2.0
+
+* Version 3.1.0
+
+* Version 3.0.0
+
+  * All new Version.

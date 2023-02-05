@@ -1,0 +1,38 @@
+Description;Imperial head cap screws;;;
+Norm;;;;
+Tolerance;;;;
+Remark;Thickness of washers are neglected!;;;
+License;None;;;
+Author;Erik Schuster;;;
+Abbreviations;d = Throughhole diameter.;;;
+;d1 = Head sinkhole diameter.;;;
+;d2 = 90° Phase for compensation of head reinforcement. From M12 on.;;;
+;T = Sinkhole depth;;;
+;;;;
+;;;;
+;;;;
+;;;;
+;;;;
+;;;;
+;;;;
+;;;;
+;;;;
+;;;;
+;;;;
+;;;;
+name;d;d1;d2;T
+1/4;;0,4375;;0,25
+5/16;;0,53125;;0,313
+3/8;;0,625;;0,375
+7/16;;0,7185;;0,438
+1/2;;0,8125;;0,5
+9/16;;0,90625;;0,563
+5/8;;1;;0,625
+3/4;;1,1875;;0,75
+7/8;;1,375;;0,875
+1;;1,625;;1
+1-1/8;;1,8125;;1,125
+1-1/4;;2;;1,25
+1-1/2;;2,375;;1,5
+1-3/4;;2,75;;1,75
+2;;3,125;;2

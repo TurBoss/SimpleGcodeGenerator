@@ -1,0 +1,43 @@
+Description;Metric head cap screws H13;;;
+Norm;ISO 4762, DIN 912;;;
+Tolerance;DIN 974-1;;;
+Remark;Thickness of washers are neglected!;;;
+License;None;;;
+Author;Erik Schuster;;;
+Abbreviations;d = Throughhole diameter.;;;
+;d1 = Head sinkhole diameter.;;;
+;d2 = 90° Phase for compensation of head reinforcement. From M12 on.;;;
+;T = Sinkhole depth;;;
+;;;;
+;;;;
+;;;;
+;;;;
+;;;;
+;;;;
+;;;;
+;;;;
+;;;;
+;;;;
+;;;;
+;;;;
+name;d;d1;d2;T
+M2;2,4;4,3;;2,1
+M2,5;2,9;5;;3
+M3;3,4;6;;3,4
+M3,5;3,9;6,5;;3,9
+M4;4,5;8;;4,4
+M5;5,5;10;;5,4
+M6;6,6;11;;6,4
+M8;9;15;;8,6
+M10;11;18;;10,6
+M12;13,5;20;15,5;12,6
+M14;15;24;17,5;14,6
+M16;17,5;26;19,5;16,6
+M18;20;30;21;18,6
+M20;22;33;24;20,6
+M22;24;36;26;22,8
+M24;26;40;28;24,8
+M27;30;46;31;31
+M30;33;50;34;34
+M33;36;54;37;36
+M36;39;58;40;37

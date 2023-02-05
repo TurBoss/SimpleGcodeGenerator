@@ -1,0 +1,52 @@
+Description;Carbide-End-Mills 2 Flute  1.0-8.0mm;;;;
+Remark;n/a;;;;
+Author;n/a;;;;
+Data;;;;;
+Material;z;d;U/min;Fz[mm/z];F[mm/min]
+Acryl,Polytyrol.,PE,PVC;2;1;25200;8;480
+Acryl,Polytyrol.,PE,PVC;2;2;15900;10;600
+Acryl,Polytyrol.,PE,PVC;2;3;15000;14;840
+Acryl,Polytyrol.,PE,PVC;2;4;15000;19;1140
+Acryl,Polytyrol.,PE,PVC;2;5;15000;24;1440
+Acryl,Polytyrol.,PE,PVC;2;6;15000;29;1740
+Acryl,Polytyrol.,PE,PVC;2;8;15000;39;2340
+Melamin,Polyester,Expoxid,Gummi;2;1;25200;8;480
+Melamin,Polyester,Expoxid,Gummi;2;2;19800;13;780
+Melamin,Polyester,Expoxid,Gummi;2;3;15000;14;840
+Melamin,Polyester,Expoxid,Gummi;2;5;15000;24;1440
+Melamin,Polyester,Expoxid,Gummi;2;6;15000;29;1740
+Graphite,Hartpapier;2;1;25200;8;480
+Graphite,Hartpapier;2;2;25200;16;960
+Graphite,Hartpapier;2;3;19000;19;1140
+Graphite,Hartpapier;2;5;15000;24;1440
+Graphite,Hartpapier;2;6;15000;29;1740
+Kupfer,Bronze,Messing,Zink;2;1;25200;2;120
+Kupfer,Bronze,Messing,Zink;2;2;22200;4;240
+Kupfer,Bronze,Messing,Zink;2;3;15000;4;240
+Kupfer,Bronze,Messing,Zink;2;5;15000;7;420
+Kupfer,Bronze,Messing,Zink;2;6;15000;8;480
+Aluminium Rein;2;1;25200;6;360
+Aluminium Rein;2;2;25200;13;780
+Aluminium Rein;2;3;25200;20;1200
+Aluminium Rein;2;5;24700;33;1980
+Aluminium Rein;2;6;25000;40;2400
+AL SI<6%;2;1;25200;6;360
+AL SI<6%;2;2;25200;13;780
+AL SI<6%;2;3;25200;20;1200
+AL SI<6%;2;5;19000;25;1500
+AL SI<6%;2;6;15900;25;1500
+AL SI<12%;2;1;25200;6;360
+AL SI<12%;2;2;23800;12;720
+AL SI<12%;2;3;15900;12;720
+AL SI<12%;2;5;15000;20;1200
+AL SI<12%;2;6;15000;24;1440
+Grauguss;2;1;23800;1;60
+Grauguss;2;2;15000;2;120
+Grauguss;2;3;15000;3;180
+Grauguss;2;5;15000;5;300
+Grauguss;2;6;15000;6;360
+Stahlguss;2;1;23800;1;60
+Stahlguss;2;2;15000;2;120
+Stahlguss;2;3;15000;3;180
+Stahlguss;2;5;15000;5;300
+Stahlguss;2;6;15000;6;360
