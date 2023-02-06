@@ -1,0 +1,17 @@
+( Project: default.sgg )
+( Date: 2023-02-06 )
+( Generator: SimpleGcodeGenerator v170708 )
+
+( Preamble )
+G17	( set xy-plane )
+G21	( units: millimeters )
+G94	( feed rate mode: units per minute )
+G61	( Exact path mode )
+G90	( distance mode )
+F1000	( feed rate )
+
+( Postamble )
+M5	( spindle control: stop the spindle )
+M9	( coolant control: turn all coolant off )
+M2	( end program )
+

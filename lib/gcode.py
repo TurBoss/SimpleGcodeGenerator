@@ -28,9 +28,9 @@ ToDo:
 import math
 import numpy
 
-import mathutils as mu
+from . import mathutils as mu
 
-VERSION = "170319"                                                              # version of this file (jjmmtt)
+VERSION = "230206"                                                              # version of this file (jjmmtt)
 
 # FORMAT
 # TEXT, COMMENT
@@ -42,7 +42,7 @@ class FORMAT(object):  # =======================================================
     def FV(self, v):
         """Returns a floating point number as a formatted string for g-code output file"""
         return ('%4.4f' % v)
-        
+
     def CMT(self, c):
         """Returns a comment string"""
         return "\t\t\t\t\t\t( " + str(c) + " )"
@@ -50,7 +50,7 @@ class FORMAT(object):  # =======================================================
 
 class TEXT(FORMAT):  # =========================================================
     """Implemets a plain text"""
-    
+
     def __init__(self, text, c=None):
         self.t = text
         self.c = c
@@ -65,7 +65,7 @@ class TEXT(FORMAT):  # =========================================================
 
 class COMMENT(FORMAT):  # ======================================================
     """Implemets a comment for g-code"""
-    
+
     def __init__(self, comment):
         self.c = comment
 
@@ -76,14 +76,14 @@ class COMMENT(FORMAT):  # ======================================================
 
 class T(FORMAT):  # ============================================================
     """Implements tool selection"""
-    
+
     name = "T"
     description = "Tool select"
-    
+
     def __init__(self, tn=None, c=None):
         self.tn = tn
         self.c = c
-        
+
     def GetGcode(self):
         """Retuns the g-code as a string"""
         if self.tn is not None:
@@ -97,14 +97,14 @@ class T(FORMAT):  # ============================================================
 
 class F(FORMAT):  # ============================================================
     """Implements feed rate command"""
-    
+
     name = "F"
     description = "Feed rate command"
-    
+
     def __init__(self, f, c=None):
         self.f = f
         self.c = c
-        
+
     def GetGcode(self):
         """Retuns the g-code as a string"""
         if self.f is not None:
@@ -117,15 +117,15 @@ class F(FORMAT):  # ============================================================
 
 class M(FORMAT):  # ============================================================
     """Implements tool selection"""
-    
+
     name = "M"
     description = "Machine command"
-    
+
     def __init__(self, n, s=None, c=None):
         self.n = n
         self.s = s
         self.c = c
-        
+
     def GetGcode(self):
         """Retuns the g-code as a string"""
         if self.n is not None:
@@ -135,20 +135,20 @@ class M(FORMAT):  # ============================================================
         else:
             g = "M!!  ( *** ERROR *** )"
         return g
-        
+
 
 class G(FORMAT):  # ============================================================
     """Implements default g-command"""
-    
+
     name = "G"
     description = "Default command"
-    
+
     def __init__(self, n, p=None, q=None, c=None):
         self.n = n
         self.c = c
         self.p = p
         self.q = q
-        
+
     def GetGcode(self):
         """Retuns the g-code as a string"""
         if self.n is not None:
@@ -163,10 +163,10 @@ class G(FORMAT):  # ============================================================
 
 class G00(FORMAT):  # ====================================================
     """Implements the g-code G00, rapid move"""
-    
+
     name = "G00"
     description = "Rapid move"
-    
+
     def __init__(self, x=None, y=None, z=None, f=None, c=None):
         self.x = x
         self.y = y
@@ -178,11 +178,11 @@ class G00(FORMAT):  # ====================================================
         if self.x is not None: self.x += o[0]
         if self.y is not None: self.y += o[1]
         if self.z is not None: self.z += o[2]
-    
+
     def Rotate(self, c, d):  # c=[x,y,z], d=n°
         if not self.x==None and not self.y==None:
             [self.x, self.y] = mu.PointRotate([self.x, self.y], c, d)
-            
+
     def GetGcode(self):
         """Retuns the g-code as a string"""
         g = "G00"
@@ -196,10 +196,10 @@ class G00(FORMAT):  # ====================================================
 
 class G01(FORMAT):  # ====================================================
     """Implements the g-code G01, linear move"""
-    
+
     name = "G01"
     description = "Linear interpolated move"
-    
+
     def __init__(self, x=None, y=None, z=None, f=None, c=None):
         self.x = x
         self.y = y
@@ -229,10 +229,10 @@ class G01(FORMAT):  # ====================================================
 
 class G02(FORMAT):  # ====================================================
     """Implements the g-code G02, clockwise arc"""
-    
+
     name = "G02"
     description = "Arc clockwise"
-    
+
     def __init__(self, x=None, y=None, z=None, i=None, j=None, k=None, p=None, f=None, c=None):
         self.x = x
         self.y = y
@@ -248,13 +248,13 @@ class G02(FORMAT):  # ====================================================
         if self.x is not None: self.x += o[0]
         if self.y is not None: self.y += o[1]
         if self.z is not None: self.z += o[2]
-        
+
     def Rotate(self, c, d):  # p=[x,y,z], d=n°
         if not self.x==None and not self.y==None:
             [self.x, self.y] = mu.PointRotate([self.x, self.y], c, d)
         if not self.i==None and not self.j==None:
             [self.i, self.j] = mu.PointRotate([self.i, self.j], [0,0], d)
-    
+
     def GetGcode(self):
         """Retuns the g-code as a string"""
         g = "G02"
@@ -272,10 +272,10 @@ class G02(FORMAT):  # ====================================================
 
 class G03(FORMAT):  # ====================================================
     """Implements the g-code G03, counter clockwise arc"""
-    
+
     name = "G03"
     description = "Arc counter clockwise"
-    
+
     def __init__(self, x=None, y=None, z=None, i=None, j=None, k=None, p=None, f=None, c=None):
         self.x = x
         self.y = y
@@ -291,13 +291,13 @@ class G03(FORMAT):  # ====================================================
         if self.x is not None: self.x += o[0]
         if self.y is not None: self.y += o[1]
         if self.z is not None: self.z += o[2]
-        
+
     def Rotate(self, c, d):  # p=[x,y,z], d=n°
         if not self.x==None and not self.y==None:
             [self.x, self.y] = mu.PointRotate([self.x, self.y], c, d)
         if not self.i==None and not self.j==None:
             [self.i, self.j] = mu.PointRotate([self.i, self.j], [0,0], d)
-    
+
     def GetGcode(self):
         """Retuns the g-code as a string"""
         g = "G03"
@@ -315,10 +315,10 @@ class G03(FORMAT):  # ====================================================
 
 class G83(FORMAT):  # ====================================================
     """Implements the g-code G83, drilling cycle peck"""
-    
+
     name = "G83"
     description = "Drilling cycle, Peck"
-    
+
     def __init__(self, x=None, y=None, z=None, r=None, l=None, q=None, f=None, c=None):
         self.x = x
         self.y = y
@@ -333,11 +333,11 @@ class G83(FORMAT):  # ====================================================
         if self.x is not None: self.x += o[0]
         if self.y is not None: self.y += o[1]
         if self.z is not None: self.z += o[2]
-        
+
     def Rotate(self, c, d):  # p=[x,y,z], d=n°
         if not self.x==None and not self.y==None:
             [self.x, self.y] = mu.PointRotate([self.x, self.y], c, d)
-    
+
     def GetGcode(self):
         """Retuns the g-code as a string"""
         g = "G83"

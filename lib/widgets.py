@@ -30,11 +30,11 @@ ToDo:
 - Actually not Widgets class needed. Better without!
 """
 
-import Tkinter as tk
-import tkMessageBox
-import tkFileDialog
+import tkinter as tk
+import tkinter.messagebox
+import tkinter.filedialog
 
-VERSION = "170529"                                                              # version of this file (jjmmtt)
+VERSION = "230206"                                                              # version of this file (jjmmtt)
 
 TOOLTIP_SHOW = True                                                             # flag to enable/disable the tool tips
 
@@ -76,7 +76,7 @@ def AskOpenFile(title, initaldir, initalfile, extname, ext):  # ================
     options['initialfile'] = initalfile
     options['multiple'] = 0
     options['title'] = title
-    filename = tkFileDialog.askopenfilename(**file_opt)
+    filename = tkinter.filedialog.askopenfilename(**file_opt)
     return filename
 
 
@@ -94,13 +94,13 @@ def AskSaveFile(title, initaldir, initalfile, extname, ext):  # ================
     options['initialfile'] = initalfile
     options['defaultextension'] = ext
     options['filetypes'] = [(extname, ext), ('all files', '.*')]
-    filename = tkFileDialog.asksaveasfilename(**file_opt)
+    filename = tkinter.filedialog.asksaveasfilename(**file_opt)
     return filename
 
 
 class ToolTip(object):  # ======================================================
     """Implements a tool-tip for mouse-over event"""
-    
+
     def __init__(self, widget, tooltiptext):
         self.widget = widget
         self.text = tooltiptext
@@ -151,7 +151,7 @@ class Widgets(object):  # ======================================================
             except ValueError:
                 return False
         return True
-        
+
     def Description(self, fr, desc="", **par):
         """Adds a decription frame with text"""
         if desc == "":
@@ -189,7 +189,7 @@ class Widgets(object):  # ======================================================
         widget.grid(column=1, row=0, pady=0, sticky="NSW")
         lb.config(yscrollcommand=widget.set)
         return lb
-    
+
     def TextboxWithScrollbar(self, target, column, row, columnspan, rowspan, width, height, sticky):
         f = tk.Frame(target)
         f.grid(column=column, row=row, rowspan=rowspan, columnspan=columnspan, sticky=sticky)
@@ -199,13 +199,13 @@ class Widgets(object):  # ======================================================
         widget.grid(column=1, row=0, pady=0, sticky="NS")
         tb.config(yscrollcommand=widget.set)
         return tb
-        
+
     def Optionbutton(self, fr, col, row, cs, var, txt, hlp):
         tk.Label(fr, text=txt, justify="right").grid(column=col, row=row, rowspan=1, padx=0, pady=2, sticky="e")
         widget = tk.Checkbutton(fr, text="", variable=var, justify=tk.LEFT)
         widget.grid(column=col + 1, row=row, columnspan=cs, rowspan=1, padx=0, sticky="we")
         ToolTip(widget, hlp)
-        
+
     def Radiobuttons(self, fr, col, row, cs, a, var, txt, opt, hlp):
         #fr=traget frame, col=column in target frame, row=row in target frame
         #cs=column span in target frame, a="v","v2", var=variable, txt=text, opt=list of options, hlp=list of helps
@@ -233,12 +233,12 @@ class Widgets(object):  # ======================================================
             ToolTip(widget, hlp[i])
         if a == "v":  # add bracket if vertical
             tk.Label(wf, text=txt, justify="right").grid(column=0, row=(row - i - 1), rowspan=i + 1, padx=0, sticky="e")
-            txt = (unichr(0x250C)) + "\n"
+            txt = (chr(0x250C)) + "\n"
             if rs > 2:
-                txt += ((unichr(0x2502)) + "\n") * (rs - 1)
+                txt += ((chr(0x2502)) + "\n") * (rs - 1)
             else:
-                txt += ((unichr(0x2502)) + "\n") * (rs - 2)
-            txt += (unichr(0x2514))
+                txt += ((chr(0x2502)) + "\n") * (rs - 2)
+            txt += (chr(0x2514))
             tk.Label(wf, text=txt).grid(column=1, row=(row - i - 1), rowspan=i + 1, padx=0, sticky="w")
         else:
             tk.Label(wf, text=txt, justify="right").grid(column=0, row=row, padx=0, sticky="e")
@@ -271,7 +271,7 @@ def ListboxWithScrollbar(frame, listvariable=None, help=False, column=0, row=0, 
 
 def Optionbutton(frame, variable, text, help=False, column=0, row=0, columnspan=1, rowspan=1, sticky="e"):
     """Add an label-option button combo with a tooltip for the option"""
-    
+
     #f = tk.Frame(frame)
     #f.grid(column=column, row=row, columnspan=columnspan, rowspan=rowspan, sticky=sticky)
     f = frame
@@ -336,16 +336,16 @@ def Radiobuttons(frame, variable, text, options, columns=0, column=0, row=0, col
 
 
 class ListBoxWithLogic(object):  #============================================== DO NOT USE
-    
+
     def __init__(self, f):
         self.lb = self.ListboxWithScrollbar(f)
         #self.lb.bind("<Double-1>", lambda x: self.ObjectEdit())
-        
+
     def Update(self, content):
         self.lb.delete(0, tk.END)
         for n in content:
             self.lb.insert(tk.END, n)
-            
+
     def SelectionMoveUp(self):
         indexes = self.lb.curselection()
         if indexes:

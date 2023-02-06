@@ -24,9 +24,9 @@ Version   Author          Changes:
 """
 
 import re
-import ConfigParser
+import configparser
 
-VERSION = "170708"                                                              # version of this file (jjmmtt)
+VERSION = "230206"                                                              # version of this file (jjmmtt)
 
 PATH = ""                                                                       # Path to the default LinuxCNC tool table
 DIR = ""                                                                        # Directory of tool tables
@@ -35,15 +35,15 @@ TOOLTABLE = []                                                                  
 
 def Init():  # =================================================================
     """Initialises the module"""
-    config = ConfigParser.ConfigParser()
+    config = configparser.ConfigParser()
     config.read('sgg.ini')
     global PATH
-    PATH = config.get('LINUXCNC', 'LCNC_TOOLTABLE', 0)
+    PATH = config.get('LINUXCNC', 'LCNC_TOOLTABLE')
     global DIR
-    DIR = config.get('LINUXCNC', 'LCNC_TOOLTABLE_DIR', 0)
+    DIR = config.get('LINUXCNC', 'LCNC_TOOLTABLE_DIR')
     if not LcncLoadToolTable(""):
         print("Error loading tool table. Check path in the file <sgg.ini>.")
-    
+
 
 class Tool(object):  # =========================================================
     """Represents a single tool"""

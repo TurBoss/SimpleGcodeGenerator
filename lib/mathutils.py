@@ -26,7 +26,7 @@ Version   Author          Changes:
 import math
 import numpy
 
-VERSION = "170506"                                                              # version of this file (jjmmtt)
+VERSION = "230206"                                                              # version of this file (jjmmtt)
 
 def PointRotate(p, r, d):
     """Rotates a point around another point"""
@@ -39,7 +39,7 @@ def PointRotate(p, r, d):
         #print e
         x = y = 0
     return [x, y]
-    
+
 def ArcAngle(l, r):
     """Calculate the angle of an arc with a given length and radius"""
     try:    return (l * 180.0) / (math.pi * r)
@@ -53,7 +53,7 @@ def PointsDistance(p1, p2):
     """Calulate the distance between two points"""
     d = numpy.array(p2) - numpy.array(p1)
     return numpy.sqrt((d * d).sum())
-    
+
 def GetPointOnLine(p0, p1, d):
     """Calculate the coordinates of a point on a line with a given distance from first point"""
     v = numpy.array(p1) - numpy.array(p0)

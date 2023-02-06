@@ -24,12 +24,12 @@ Version   Author          Changes:
 
 import copy
 
-VERSION = "170516"                                                              # version of this file (jjmmtt)
+VERSION = "230206"                                                              # version of this file (jjmmtt)
 
 
 def ListItemsMoveUp(li, indexes):
     """Moves down the given indexes in the list"""
-    indexes = map(int, indexes)
+    indexes = list(map(int, indexes))
     if not indexes[0]==0:
         for i in indexes:
             o = li.pop(int(i))
@@ -40,7 +40,7 @@ def ListItemsMoveUp(li, indexes):
 
 def ListItemsMoveDown(li, indexes):
     """Moves down the given indexes in the list"""
-    indexes = map(int, indexes)
+    indexes = list(map(int, indexes))
     indexes = sorted(list(indexes), reverse=True)
     if not indexes[0]>=(len(li)-1):
         for i in indexes:
@@ -59,7 +59,7 @@ def ListItemsDelete(li, indexes):
     for i in indexes:
         if len(li)>=i:
             li.pop(int(i))
-        
+
 
 def ListItemDublicate(li, index):
     """Dublicate the given index in the list and insert at index+1"""

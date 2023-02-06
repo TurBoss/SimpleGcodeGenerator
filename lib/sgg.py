@@ -38,20 +38,20 @@ import os
 import copy
 import subprocess
 import re
-import ConfigParser
+import configparser
 
-import ncclasses                                                                # import g-code shapes (outlining, pocketing, ...)
-import tooltable                                                                # reading the linux cnc tool table
-import counterbore                                                              # provides drill paraemetrs for counter bores
-import ngcsub                                                                   # support for ngc subroutines
-import utils                                                                    # common utility functions
-import feedsnspeeds
-import font2vector
+from . import ncclasses                                                                # import g-code shapes (outlining, pocketing, ...)
+from . import tooltable                                                                # reading the linux cnc tool table
+from . import counterbore                                                              # provides drill paraemetrs for counter bores
+from . import ngcsub                                                                   # support for ngc subroutines
+from . import utils                                                                    # common utility functions
+from . import feedsnspeeds
+from . import font2vector
 
 APP = "SimpleGcodeGenerator"                                                    # name of the application
-VERSION = "170708"                                                              # version of this file (jjmmtt)
+VERSION = "230206"                                                              # version of this file (jjmmtt)
 
-IN_AXIS = os.environ.has_key("AXIS_PROGRESS_BAR")                               # started within Axis?
+IN_AXIS = "AXIS_PROGRESS_BAR" in os.environ                               # started within Axis?
 LCNC_BIN_DIR = ""                                                               # path to LinuxCNC (only if <PATH> not set)
 
 PREAMBLE_DEFAULT = "G17\t( set xy-plane )\nG21\t( units: millimeters )\nG94\t( feed rate mode: units per minute )\nG61\t( Exact path mode )\nG90\t( distance mode )\nF1000\t( feed rate )"
@@ -62,13 +62,13 @@ PROJECTFILE_DEFAULT = "default.sgg"                                             
 
 class ncobject(object):  # =====================================================
     """Wrapper class for ncclasses instances, to keep track of changes"""
-   
+
     def __init__(self, obj):
         """Initialise the class"""
         self.obj = obj                                                          # ncclass instance
         self.gcode = obj.GetGcode(obj.Update())                                 # g-code result of the instance
         self.varcopy = self.CopyVars(obj)                                       # current values of the instance variables
-        
+
     def GetGcode(self, recalculate=False):
         """Returns the g-code of the object and updates the g-code only when neccessary"""
         if recalculate:
@@ -79,7 +79,7 @@ class ncobject(object):  # =====================================================
                 self.gcode = self.obj.GetGcode(self.obj.Update())
                 self.varcopy = self.CopyVars(self.obj)
         return self.gcode
-        
+
     def CopyVars(self, obj):
         """Copies the variable contents of the given object into a list"""
         p = []
@@ -101,7 +101,7 @@ class sgg():  # ================================================================
         self.postamble_found = False
         self.__InitDefaults()
         self.AxisRemoteSetPath()
-        
+
     def __InitDefaults(self):
         """Init the application with defaults for pre and postamble"""
         obj = self.ObjectCreate(0,0)                                            # create the default preamble
@@ -115,7 +115,7 @@ class sgg():  # ================================================================
             preamble = PREAMBLE_DEFAULT
             self.preamble_found = False
         obj.text = preamble
-        
+
         obj = self.ObjectCreate(0,1)                                            # create the default postamble
         obj.objectname = "Postamble"
         try:                                                                    # load an existing file or use the source code defaults
@@ -134,12 +134,12 @@ class sgg():  # ================================================================
         font2vector.Init()                                                      # init the font2vector module
         ncclasses.Init()                                                        # init the ncclasses module
         feedsnspeeds.Init()                                                     # init the feedsnspeeds module
-        
-        config = ConfigParser.ConfigParser()
+
+        config = configparser.ConfigParser()
         config.read('sgg.ini')
         global LCNC_BIN_DIR
-        LCNC_BIN_DIR = config.get('LINUXCNC', 'LCNC_BIN_DIR', 0)
-    
+        LCNC_BIN_DIR = config.get('LINUXCNC', 'LCNC_BIN_DIR')
+
     def ObjectCreate(self, classindex, objectindex):
         """Creates a new instance and inserts the object into the objectlist after the given index. Returns the new object"""
         obj = ncobject(ncclasses.NCCLASSES[classindex]())
@@ -157,15 +157,15 @@ class sgg():  # ================================================================
     def ObjectsDelete(self, indexes):
         """Deletes the objects at the given indexes"""
         utils.ListItemsDelete(self.objlist, indexes)
-        
+
     def ObjectsMoveUp(self, indexes):
         """Moves up the selected objects in the objectlist"""
         return utils.ListItemsMoveUp(self.objlist, indexes)
-        
+
     def ObjectsMoveDown(self, indexes):
         """Moves down the selected objects in the objectlist"""
         return utils.ListItemsMoveDown(self.objlist, indexes)
-        
+
     def GetObject(self, index):
         """Returns the nc-object with the given index from the objectlist"""
         return self.objlist[index].obj
@@ -181,7 +181,7 @@ class sgg():  # ================================================================
         with open(filename, 'wb') as handle:
             pickle.dump(ol, handle, pickle.HIGHEST_PROTOCOL)
         self.fn_project = filename
-            
+
     def LoadProject(self, filename, index=None):
         """Load a project"""
         with open(filename, 'rb') as handle:
@@ -193,13 +193,13 @@ class sgg():  # ================================================================
                     index+=1
         self.fn_project = filename
         self.GetGcode(recalculate=True)
-        
+
     def ResetProject(self):
         """Reset the current project (delete all objects)"""
         del(self.objlist)
         self.objlist = []
         self.__InitDefaults()
-        
+
     def SaveGcode(self, filename, indexes=None):
         """Write g-code of the whole project or the selected objects to a file"""
         retval = True
@@ -224,7 +224,7 @@ class sgg():  # ================================================================
             for i in indexes:
                 gcode += self.objlist[i].GetGcode(recalculate)
         return gcode
-        
+
     def AxisReload(self):
         """If LinuxCNC Axis is running, let it reload the current loaded file"""
         try:
@@ -250,10 +250,10 @@ class sgg():  # ================================================================
     def WriteGcodeToStdout(self):
         """Write the gcode to stdout"""
         sys.stdout.write(self.GetGcode())
-    
+
     def __SendCommand(self, cmd):
         """Send a command to STDOUT"""
-        return subprocess.call(cmd, shell=True)  
+        return subprocess.call(cmd, shell=True)
         #return subprocess.check_output(cmd, stderr=subprocess.STDOUT, shell=True, bufsize=1024, cwd=DIR_LINUXCNC_BIN)
 
     def GetObjectNames(self):
@@ -272,7 +272,7 @@ class sgg():  # ================================================================
                 index = i
                 break
         return index
-        
+
     def AxisRemoteSetPath(self):
         """Determine the path to axis-remote"""
         paths = ["",LCNC_BIN_DIR]

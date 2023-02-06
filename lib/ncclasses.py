@@ -46,24 +46,24 @@ ToDo:
 - Finalise <Relief> class.
 """
 
-import Tkinter as tk
+import tkinter as tk
 import math
 import string
 import copy
 import numpy
 import re
 import unicodedata
-import Image
-import ConfigParser
+from PIL import Image
+import configparser
 
-import mathutils as mu                                                          # import math helper functions
-import gcode as gc                                                              # import basic g-code classes
-import font2vector as f2v                                                       # import module for class "Text"
-import ngcsub
-import utils                                                                    # common utility functions
-import nclib as ncl                                                             # nc library functions
+from . import mathutils as mu                                                          # import math helper functions
+from . import gcode as gc                                                              # import basic g-code classes
+from . import font2vector as f2v                                                       # import module for class "Text"
+from . import ngcsub
+from . import utils                                                                    # common utility functions
+from . import nclib as ncl                                                             # nc library functions
 
-VERSION = "170712"                                                              # version of this file (jjmmtt)
+VERSION = "230206"                                                              # version of this file (jjmmtt)
 DEFAULTS = {}                                                                   # default parameters
 
 
@@ -74,7 +74,7 @@ def Init():  # =================================================================
           "preamble_gcode","preamble_tool","preamble_zsh","preamble_plane",\
           "preamble_spindle_cw","preamble_spindle_ccw","preamble_mist","preamble_flood",\
           "postamble_gcode","postamble_zsh","postamble_spindle_off","postamble_coolant_off"]
-    config = ConfigParser.ConfigParser()
+    config = configparser.ConfigParser()
     config.read('defaults.ini')
     global DEFAULTS
     for p in pl:
@@ -83,7 +83,7 @@ def Init():  # =================================================================
 
 class Basedata(object):  # =====================================================
     """Implements the basic class for most nc classes"""
-    
+
     def __init__(self):
         """Initialise the basic variables"""
         self.objectname = self.name + "_" + str(self.i)
@@ -107,7 +107,7 @@ class Basedata(object):  # =====================================================
         self.rz = float(DEFAULTS["rz"])              # center of rotation (z)
         self.deg = float(DEFAULTS["deg"])            # rotation around center of rotation
         self.plane = int(DEFAULTS["plane"])          # plane selection 0=G17, 1=G18, 2=G19, 3=G17.1, 3=G18.1, 4=G19.1
-        
+
         self.preamble_gcode = DEFAULTS["preamble_gcode"]             # user defined preamble g-code
         self.preamble_tool = DEFAULTS["preamble_tool"]               # select and change tool
         self.preamble_zsh  = DEFAULTS["preamble_zsh"]                # go to safety height
@@ -116,12 +116,12 @@ class Basedata(object):  # =====================================================
         self.preamble_spindle_ccw = DEFAULTS["preamble_spindle_ccw"] # turn on the spindle counter clockwise
         self.preamble_mist = DEFAULTS["preamble_mist"]               # turn on mist collant
         self.preamble_flood = DEFAULTS["preamble_flood"]             # turn on flood coolant
-        
+
         self.postamble_gcode = DEFAULTS["postamble_gcode"]               # user defined postamble g-code
         self.postamble_zsh = DEFAULTS["postamble_zsh"]                   # got to safety height
         self.postamble_spindle_off = DEFAULTS["postamble_spindle_off"]   # turn spindle off
         self.postamble_coolant_off = DEFAULTS["postamble_coolant_off"]   # turn coolant off
-        
+
     def BaseparametersOK(self):
         """Check the basic variables for plausibility, e.g. avoid endless loops"""
         if self.z1 < self.z0 and \
@@ -138,7 +138,7 @@ class Basedata(object):  # =====================================================
 
 class Basemethods(object): # ===================================================
     """Implements the basic methods for most nc-classes"""
-    
+
     def GetGcode(self, objectlist):
         """Returns the g-code of all generated objects as a string, adds offset and rotates."""
         ol = copy.deepcopy(objectlist)                                          # copy the objects, we do not want to modify the original data
@@ -168,7 +168,7 @@ class Basemethods(object): # ===================================================
         if self.preamble_flood: ol.append(gc.M(8, c="Turn flood coolant on"))
         if not self.preamble_gcode=="": ol.append(gc.TEXT(self.preamble_gcode, c="User specific preamble"))
         return ol
-        
+
     def DefaultPostamble(self):
         """Creates a default postamble and returns an object list"""
         ol = []
@@ -181,17 +181,17 @@ class Basemethods(object): # ===================================================
 
 class CustomCode(Basemethods):  # ==============================================
     """Generate g-code for Free text/g-code"""
-    
+
     name="CustomCode"
     description="Individual g-code or text"
     i = 0
-    
+
     def __init__(self):
         self.__class__.i += 1
         self.objectname = self.name + "_" + str(self.i)
         super(CustomCode, self).__init__()
         self.text = "( Add your g-code... )"
-    
+
     def Update(self):
         """Calculates the path for the nc-object and returns it as a list of gcode-objects"""
         ol = []
@@ -201,15 +201,15 @@ class CustomCode(Basemethods):  # ==============================================
 
 class OutlineRectangle(Basedata, Basemethods):  # ==============================
     """Generate g-code for OutlineRectangle"""
-    
+
     name="OutlineRectangle"
     description="Outline a rectangle"
     i = 0
-    
+
     def __init__(self):
         self.__class__.i += 1
         super(OutlineRectangle, self).__init__()
-        
+
         self.w = 40                 # width (x)
         self.h = 20                 # height (y)
         self.climb = True           # machining direction,  0=conventional, 1=climb cutting
@@ -220,12 +220,12 @@ class OutlineRectangle(Basedata, Basemethods):  # ==============================
         self.rsx = 0                # rotation center x of shape
         self.rsy = 0                # rotation center y of shape
         self.rsdeg = 0              # degrees of shape rotation
-        
+
         self.rur = 5
         self.rul = 5
         self.rlr = 5
         self.rll = 5
-        
+
     def ParametersOk(self):
         """Check the variables for plausibility, e.g. avoid endless loops"""
         if self.BaseparametersOK() and\
@@ -243,25 +243,25 @@ class OutlineRectangle(Basedata, Basemethods):  # ==============================
 
         if self.br: ze = self.z1 + self.brh                                     # determine end depth before bridges
         else:       ze = self.z1
-        
+
         if self.contour==0:     x,y = (self.w-self.td)/2, (self.h-self.td)/2    # inside
         elif self.contour==2:   x,y = (self.w+self.td)/2, (self.h+self.td)/2    # outside
         else:                   x,y = self.w/2, self.h/2                        # no tool compensation
-        
+
         p = [[x,y],[x,-y],[-x,-y],[-x,y],[x,y]]                                 # define the waypoints for the rectangle
-        
+
         br = (self.brw + self.td)/ 2                                            # define the waypoints for bridges
         br = ["-",[x,y],"-",[x,br],"+",[x,-br],"-",[x,-y],"-",[br,-y],"+",
              [-br,-y],"-",[-x,-y],"-",[-x,-br],"+",[-x,br],"-",[-x,y],"-",
              [-br,y],"+",[br,y],"-",[x,y],"-"]
-        
+
         if not self.climb:      p, br = p[::-1], br[::-1]                       # reverse the waypoints for climb cutting
         if self.contour==1:     p, br = p[::-1], br[::-1]                       # reverse the waypoints for inside cutting
-        
+
         ol = self.DefaultPreamble()
         ol.append(gc.G00(x=p[0][0], y=p[0][1], c="Rapid move to start point"))
         ol.append(gc.G00(z=self.z0 + self.zsh0, c="Rapid down to workpiece"))
-        
+
         z = self.z0                                                             # mill the shape
         while z > ze:
             z -= self.zi
@@ -270,7 +270,7 @@ class OutlineRectangle(Basedata, Basemethods):  # ==============================
             ol.append(gc.G01(z=z, f=self.frz))
             for xy in p:
                 ol.append(gc.G01(x=xy[0],y=xy[1], f=self.frtd))
-        
+
         if self.br and not self.brh==0 and not self.brw==0:                     # mill the bridges
             while z > self.z1:
                 z -= self.zi
@@ -283,10 +283,10 @@ class OutlineRectangle(Basedata, Basemethods):  # ==============================
                         ol.append(gc.G01(z=ze, f=self.frz))
                     if len(xy)==1 and xy=="-":
                         ol.append(gc.G01(z=z, f=self.frz))
-        
+
         #ol.append(gc.G00(z=self.zsh, c="To safety height"))
         ol += self.DefaultPostamble()
-        
+
         for o in ol:
             try:    o.Rotate([self.rsx, self.rsy, 0], self.rsdeg)               # rotate the gcode object
             except: pass                                                        # not all gcode objects support Rotate ;-)
@@ -295,11 +295,11 @@ class OutlineRectangle(Basedata, Basemethods):  # ==============================
 
 class OutlineCircle(Basedata, Basemethods):  # =================================
     """Generate g-code for OutlineCircle"""
-    
+
     name="OutlineCircle"
     description="Outline a circle"
     i = 0
-    
+
     def __init__(self):
         self.__class__.i += 1
         super(OutlineCircle, self).__init__()
@@ -330,7 +330,7 @@ class OutlineCircle(Basedata, Basemethods):  # =================================
         phi = ((self.td + self.brw) * 360.0) / (2.0 * math.pi * r) / 2.0        # half-angle for the bridges
         if self.br: ze = self.z1 + self.brh                                     # determine end depth before bridges
         else:       ze = self.z1
-        
+
         if (self.contour==0 and self.climb) or \
            (not self.contour==0 and not self.climb):                                # define g02 or g03 and define arc angles for bridges
             fn = gc.G03
@@ -338,11 +338,11 @@ class OutlineCircle(Basedata, Basemethods):  # =================================
         else:
             fn = gc.G02
             deg = [0,360-phi,270+phi,270-phi,180+phi,180-phi,90+phi,90-phi,0+phi]
-        
+
         bl = []                                                                 # calculate points for bridges
         for d in deg:
             bl.append(mu.PointRotate([r,0],[0,0],d))
-            
+
         ol = self.DefaultPreamble()
         ol.append(gc.G00(x=r, y=0, c="Rapid move to start point"))
         if self.br and self.brh > abs(self.z1):
@@ -356,7 +356,7 @@ class OutlineCircle(Basedata, Basemethods):  # =================================
             if z < ze:
                 z = ze
             ol.append(fn(z=z, i=-r, j=0, f=self.frtd))
-        
+
         if self.br and not self.brh==0 and not self.brw==0:                     # cut bridges
             while z > self.z1:
                 z -= self.zi
@@ -368,7 +368,7 @@ class OutlineCircle(Basedata, Basemethods):  # =================================
                     ol.append(fn(x=bl[i+2][0], y=bl[i+2][1], i=-bl[i+1][0], j=-bl[i+1][1], f=self.frtd))
                     ol.append(gc.G01(z=ze))
                 ol.append(fn(x=bl[0][0], y=bl[0][1], i=-bl[8][0], j=-bl[8][1], f=self.frtd))
-        
+
         if not self.br or self.brh==0 or self.brw==0:
             ol.append(fn(z=z, i=-r, j=0, f=self.frtd))  # final pass
         #ol.append(gc.G00(z=self.zsh, c="To safety height"))
@@ -378,15 +378,15 @@ class OutlineCircle(Basedata, Basemethods):  # =================================
 
 class OutlineEllipse(Basedata, Basemethods):  # ================================
     """Generate g-code for OutlineEllipse"""
-    
+
     name="OutlineEllipse"
     description="Outline an ellipse"
     i = 0
-    
+
     def __init__(self):
         self.__class__.i += 1
         super(OutlineEllipse, self).__init__()
-       
+
         self.a = 20                 # radius x
         self.b = 10                 # radius b
         self.ai = 5                 # angle increment (resolution)
@@ -395,7 +395,7 @@ class OutlineEllipse(Basedata, Basemethods):  # ================================
         self.br = False             # bridges 0=none, 1=x4
         self.brh = 1.0              # height of bridges
         self.brw = 1.0              # width of bridges
-        
+
     def ParametersOk(self):
         """Check the variables for plausibility, e.g. avoid endless loops"""
         if self.BaseparametersOK() and\
@@ -411,7 +411,7 @@ class OutlineEllipse(Basedata, Basemethods):  # ================================
     def Update(self):
         """Calculates the path for the nc-object and returns it as a list of gcode-objects"""
         if not self.ParametersOk(): return [gc.COMMENT("PARAMETER ERROR")]
-        
+
         # determine end depth before bridges
         if self.br: ze = self.z1 + self.brh
         else:       ze = self.z1
@@ -420,32 +420,32 @@ class OutlineEllipse(Basedata, Basemethods):  # ================================
             b = self.b - self.td / 2.0
             ai = self.ai
             if not self.climb:
-                rng = range(360,0,-ai)
+                rng = list(range(360,0,-ai))
                 x, y = mu.PointEllipse(a, b, ai) #define start point
             else:
-                rng = range(0,360,ai)
+                rng = list(range(0,360,ai))
                 x, y = mu.PointEllipse(a, b, -ai) #define start point
         elif self.contour==2:
             a = self.a + self.td / 2.0
             b = self.b + self.td / 2.0
             ai = self.ai
             if not self.climb:    #conventional
-                rng = range(0,360,ai)
+                rng = list(range(0,360,ai))
                 x, y = mu.PointEllipse(a, b, -ai) #define start point
             else:                   # climb
-                rng = range(360,0,-ai)
+                rng = list(range(360,0,-ai))
                 x, y = mu.PointEllipse(a, b, ai) #define start point
         else:
             a = self.a
             b = self.b
             ai = self.ai
             if not self.climb:    #conventional
-                rng = range(0,360,ai)
+                rng = list(range(0,360,ai))
                 x, y = mu.PointEllipse(a, b, -ai) #define start point
             else:                   # climb
-                rng = range(360,0,-ai)
+                rng = list(range(360,0,-ai))
                 x, y = mu.PointEllipse(a, b, ai) #define start point
-                
+
         ol = self.DefaultPreamble()
         ol.append(gc.G00(x=x, y=y, c="Rapid move to start point"))
         ol.append(gc.G(64,p=0.05))
@@ -478,15 +478,15 @@ class OutlineEllipse(Basedata, Basemethods):  # ================================
 
 class OutlinePolygon(Basedata, Basemethods):  # ================================
     """Generate g-code for OutlinePolygon"""
-    
+
     name="OutlinePolygon"
     description="Cut along a polygon path"
     i = 0
-    
+
     def __init__(self):
         self.__class__.i += 1
         super(OutlinePolygon, self).__init__()
-        
+
         self.scalex = 1
         self.scaley = 1
         self.x = 0
@@ -559,7 +559,7 @@ class OutlinePolygon(Basedata, Basemethods):  # ================================
             except:
                 pass
         return ol
-        
+
     def Import(self, filename):
         handle = open(filename, 'rb')
         self.poly = []
@@ -572,26 +572,26 @@ class OutlinePolygon(Basedata, Basemethods):  # ================================
                 except ValueError:
                     pass
         handle.close()
-        
+
     def GetPoly(self, index):
         if len(self.poly)>=index:
             return self.poly[index].x, self.poly[index].y
-            
+
     def ObjectUpdate(self, index, x, y):
         if len(self.poly)>=index:
             self.poly[index].x = x
             self.poly[index].y = y
-            
+
     def ObjectInsert(self, index, x, y):
         self.poly.insert(index, gc.G01(x=x, y=y))
-        
+
     def ObjectDelete(self, index):
         utils.ListItemsDelete(self.poly, index)
-            
+
     def ObjectsMoveUp(self, indexes):
         """Moves up the selected objects in the objectlist"""
         return utils.ListItemsMoveUp(self.poly, indexes)
-        
+
     def ObjectsMoveDown(self, indexes):
         """Moves down the selected objects in the objectlist"""
         return utils.ListItemsMoveDown(self.poly, indexes)
@@ -608,15 +608,15 @@ class OutlinePolygon(Basedata, Basemethods):  # ================================
 
 class PocketRectangle(Basedata, Basemethods):  # ===============================
     """Generate g-code for PocketRectangle"""
-    
+
     name="PocketRectangle"
     description="Pocketing a rectangle"
     i = 0
-    
+
     def __init__(self):
         self.__class__.i += 1
         super(PocketRectangle, self).__init__()
-       
+
         self.w = 50                # width
         self.h = 40                # height
         self.climb = True          # machining direction,  0=conventional, 1=climb cutting
@@ -708,15 +708,15 @@ class PocketRectangle(Basedata, Basemethods):  # ===============================
 
 class PocketCircle(Basedata, Basemethods):  # ==================================
     """Generate g-code for PocketCircle"""
-    
+
     name="PocketCircle"
     description="Pocketing a circle"
     i = 0
-    
+
     def __init__(self):
         self.__class__.i += 1
         super(PocketCircle, self).__init__()
-        
+
         self.ri = 5                 # inner radius
         self.ra = 20                # outer radius
         self.climb = True           # machining direction,  0=conventional, 1=climb cutting
@@ -752,11 +752,11 @@ class PocketCircle(Basedata, Basemethods):  # ==================================
 
 class Grill(Basedata, Basemethods):  # =========================================
     """Generate g-code for Grill"""
-    
+
     name="Grill"
     description="Drilling a grill"
     i = 0
-    
+
     def __init__(self):
         self.__class__.i += 1
         super(Grill, self).__init__()
@@ -789,7 +789,7 @@ class Grill(Basedata, Basemethods):  # =========================================
         #ol.append(gc.G00(z=self.zsh, c="To safety height"))
         ol += self.DefaultPostamble()
         return ol
-        
+
     def GetPlist(self):
         dxy = self.td + self.dist
         nx = self.w / 2 / dxy
@@ -815,15 +815,15 @@ class Grill(Basedata, Basemethods):  # =========================================
                 if (((xy[0] * xy[0] / Ax) + (xy[1] * xy[1] / Ay)) < 1.0):
                     plist2.append(xy)
         return plist2
-        
+
 
 class Bezel(Basedata, Basemethods):  # =========================================
     """Generate g-code for Bezel"""
-    
+
     name="Bezel"
     description="Engraving a bezel"
     i = 0
-    
+
     def __init__(self):
         self.__class__.i += 1
         super(Bezel, self).__init__()
@@ -861,7 +861,7 @@ class Bezel(Basedata, Basemethods):  # =========================================
         #ol.append(gc.G00(z=self.zsh, c="To safety height"))
         ol += self.DefaultPostamble()
         return ol
-        
+
     def GetPlist(self):
         a = (self.a1 - self.a0) / (self.div - 1)  # delta angle
         plist = []
@@ -881,11 +881,11 @@ class Bezel(Basedata, Basemethods):  # =========================================
 
 class DrillMatrix(Basedata, Basemethods):  # ===================================
     """Generate g-code for DrillMatrix"""
-    
+
     name="DrillMatrix"
     description="Drilling a matrix"
     i = 0
-    
+
     def __init__(self):
         self.__class__.i += 1
         super(DrillMatrix, self).__init__()
@@ -921,7 +921,7 @@ class DrillMatrix(Basedata, Basemethods):  # ===================================
         #ol.append(gc.G00(z=self.zsh, c="To safety height"))
         ol += self.DefaultPostamble()
         return ol
-        
+
     def GetPlist(self):
         plist = []
         if self.center:
@@ -937,11 +937,11 @@ class DrillMatrix(Basedata, Basemethods):  # ===================================
 
 class Slot(Basedata, Basemethods):  # ==========================================
     """Generate g-code for Slot"""
-    
+
     name="Slot"
     description="Pocketing a slot"
     i = 0
-    
+
     def __init__(self):
         self.__class__.i += 1
         super(Slot, self).__init__()
@@ -979,7 +979,7 @@ class Slot(Basedata, Basemethods):  # ==========================================
             if self.peck == 1: ol.append(gc.G83(z=z, r=z+self.zi, q=self.zi/2, f=self.frz))
             ol.append(gc.G01(z=z, f=self.frz))
             ol.append(gc.G01(x=0, y=0, f=self.frtd))
-            
+
         #ol.append(gc.G00(z=self.zsh, c="To safety height"))
         ol += self.DefaultPostamble()
         return ol
@@ -987,11 +987,11 @@ class Slot(Basedata, Basemethods):  # ==========================================
 
 class PocketCircularArc(Basedata, Basemethods):  # =============================
     """Generate g-code for PocketCircularArc"""
-    
+
     name="PocketCircularArc"
     description="Pocketing a circular arc"
     i = 0
-    
+
     def __init__(self):         # ==== MANDATORY METHOD ====
         self.__class__.i += 1
         super(PocketCircularArc, self).__init__()
@@ -1011,18 +1011,18 @@ class PocketCircularArc(Basedata, Basemethods):  # =============================
     def Update(self):           # ==== MANDATORY METHOD ====
         """Calculates the path for the nc-object and returns it as a list of gcode-objects"""
         if not self.ParametersOk(): return [gc.COMMENT("PARAMETER ERROR")]  # ==== RECOMMENDED CALL ====
-        
+
         so = self.td / 100 * self.so
         r0 = self.ri + (self.ro - self.ri) / 2.0
         drmax = (self.ro - self.ri) / 2.0 - so
         drmax2 = drmax - so
         a = mu.ArcAngle(so, r0)
         x0, y0 = mu.PointRotate([r0,0],[0,0],self.a0+a)
-        
+
         ol = self.DefaultPreamble()
         ol.append(gc.G00(x=x0, y=y0, c="Rapid move to start point"))
         ol.append(gc.G00(z=self.z0 + self.zsh0, c="Rapid down to workpiece"))
-        
+
         z = self.z0
         while z > self.z1:
             z -= self.zi
@@ -1040,13 +1040,13 @@ class PocketCircularArc(Basedata, Basemethods):  # =============================
                 if dr>=drmax:
                     break
             ol.append(gc.G01(x=x0, y=y0))
-        
+
         x0, y0 = mu.PointRotate([r0,0],[0,0],self.a0+a*1.5)
         ol.append(gc.G01(x=x0, y=y0, z= z + self.zi))
         #ol.append(gc.G00(z=self.zsh, c="To afety height"))
         ol += self.DefaultPostamble()
         return ol
-        
+
     def GetArc(self, a0, a1, ri, ro):
         ol = []
         a = mu.ArcAngle(self.td/2.0, ro)
@@ -1054,22 +1054,22 @@ class PocketCircularArc(Basedata, Basemethods):  # =============================
         x1, y1 = mu.PointRotate([ro,0],[0,0],a1-a)
         ol.append(gc.G01(x=x0, y=y0, f=self.frtd))
         ol.append(gc.G03(x=x1, y=y1, i=-x0, j=-y0))
-        
+
         a = mu.ArcAngle(self.td/2.0, ri)
         x0, y0 = mu.PointRotate([ri,0],[0,0],self.a1-a)
         x1, y1 = mu.PointRotate([ri,0],[0,0],self.a0+a)
         ol.append(gc.G01(x=x0, y=y0, f=self.frtd))
         ol.append(gc.G02(x=x1, y=y1, i=-x0, j=-y0))
         return ol
-        
+
 
 class OutlineCircularArc(Basedata, Basemethods):  # ============================
     """Generate g-code for OutlineCircularArc"""
-    
+
     name="OutlineCircularArc"
     description="Outlining a circular arc"
     i = 0
-    
+
     def __init__(self):         # ==== MANDATORY METHOD ====
         self.__class__.i += 1
         super(OutlineCircularArc, self).__init__()
@@ -1121,12 +1121,12 @@ class OutlineCircularArc(Basedata, Basemethods):  # ============================
             ol.append(gc.G01(z=z, f=self.frtd))
             ol += self.GetArc(self.a0, self.a1, ri, ro)
             ol.append(gc.G01(x=x0, y=y0))
-        
+
         ol.append(gc.G01(x=x0, y=y0, z= z + self.zi))
         #ol.append(gc.G00(z=self.zsh, c="To afety height"))
         ol += self.DefaultPostamble()
         return ol
-        
+
     def GetArc(self, a0, a1, ri, ro, br=True):
         ol = []
         a = mu.ArcAngle(self.td/2.0, ro)
@@ -1159,15 +1159,15 @@ class OutlineCircularArc(Basedata, Basemethods):  # ============================
 
 class Text(Basedata, Basemethods):  # ==========================================
     """Generate g-code for Text"""
-    
+
     name="Text"
     description="Engrave text"
     i = 0
-    
+
     def __init__(self):         # ==== MANDATORY METHOD ====
         self.__class__.i += 1
         super(Text, self).__init__()
-        
+
         self.text = "Simple G-Code\nGenerator!!!"                               # text to engrave
         self.fontfile = "courier.cxf"                                           # font file to use (cxf v1 only)
         self.char_height = 10                                                   # character height
@@ -1181,12 +1181,12 @@ class Text(Basedata, Basemethods):  # ==========================================
         self.align = 1                                                          # 0=upper left, 1=upper center, 2=upper right
         self.mirrorh = False                                                    # mirrors the characters (horizontally)
         self.mirrorv = False                                                    # mirrors the characters (vertically)
-        
+
         self.font = None                                                        # instance of class <Font> from <textengrave.py>
         self.parsed = False                                                     # if true, fontfile is successfully parsed
-        
+
         self.LoadFont(self.fontfile)
-        
+
     def ParametersOk(self):     # ==== RECOMMENDED METHOD ====
         """Check the variables for plausibility, e.g. avoid endless loops"""
         if self.BaseparametersOK() and \
@@ -1255,13 +1255,13 @@ class Text(Basedata, Basemethods):  # ==========================================
             r -= self.line_space
             row -= self.line_space
         return ol
-            
+
     def GetCharGcode(self, char, scalex, scaley):
         """Returns the g-code of the given character aligned to 0,0"""
         ol = []
         if char==" ": return ol
         if not self.font.HasChar(char): return ol
-        
+
         z = self.z0
         while z > self.z1:
             z -= self.zi
@@ -1281,7 +1281,7 @@ class Text(Basedata, Basemethods):  # ==========================================
                 x1, y1 = stroke.x1 * scalex, stroke.y1 * scaley
                 ol.append(gc.G01(x=x1, y=y1))                       # engrave
         return ol
-    
+
     def GetTextWidth(self, text, scalex):
         """Returns the width of the text"""
         l = 0
@@ -1298,13 +1298,13 @@ class Text(Basedata, Basemethods):  # ==========================================
         if self.font.HasChar(c):
             l -= self.char_space - self.font.chars[c].xmin
         return l
-        
+
     def GetTextHeight(self, text, scaley):
         """Returns the height of the text"""
         if not scaley==1: l = text.count("\n") * self.char_height
         else:             l = text.count("\n") * self.font.ymax
         return l
-    
+
     def GetScale(self):
         """Returns the scale factor for x and y. If height or with are zero, the scale is set one."""
         if self.char_width==0 or self.char_height==0:
@@ -1313,7 +1313,7 @@ class Text(Basedata, Basemethods):  # ==========================================
             scalex = self.char_width / self.font.wmax
             scaley = self.char_height / self.font.hmax
         return scalex, scaley
-    
+
     def LoadFont(self, fn):
         """Loads the given fontfile"""
         self.font = f2v.LoadFont(fn, self.arcres)
@@ -1324,16 +1324,16 @@ class Text(Basedata, Basemethods):  # ==========================================
             self.parsed = True
             self.fontfile = fn
         return self.parsed
-        
+
     def GetWholeFont(self):
         """Returns all "usable" characters of the current font"""
         text = ""
         for key in self.font.chars:
-            text += unichr(key)
+            text += chr(key)
         text = re.sub(r'[\x00-\x1f\x7f-\x9f]', '', text)        # remove control characters
         text = self.InsertNewLine(text, step=10)
         return text
-        
+
     def InsertNewLine(self, text, step=80):
         """Inserts new line characters into the given string"""
         return '\n'.join(text[i:i+step] for i in range(0, len(text), step))
@@ -1341,15 +1341,15 @@ class Text(Basedata, Basemethods):  # ==========================================
 
 class Relief(Basedata, Basemethods):  # ========================================  UNDER DEVELOPMENT!!!
     """Generate g-code from an image"""
-    
+
     name="Relief"
     description="Milling an image"
     i = 0
-    
+
     def __init__(self):         # ==== MANDATORY METHOD ====
         self.__class__.i += 1
         super(Relief, self).__init__()
-        
+
         self.fn_image = ""          # filename of the image
         self.image = None
         self.image_width = ""
@@ -1377,7 +1377,7 @@ class Relief(Basedata, Basemethods):  # ========================================
         ol.append(gc.G(61, c="Exact path mode"))
         ol += self.DefaultPostamble()
         return ol
-        
+
     def Gif2Gcode(self, x0, y0, z0):
         if self.image==None: return []
         ol = []
@@ -1388,7 +1388,7 @@ class Relief(Basedata, Basemethods):  # ========================================
         xmax = self.image_width
         ymax = self.image_height
         f = self.scale
-        
+
         if self.cuth:
             pix_= pix__ = 1000
             reverse = False
@@ -1410,7 +1410,7 @@ class Relief(Basedata, Basemethods):  # ========================================
                 else:        reverse = True
                 pix_= 1000
                 ol.append(gc.G01(z=z0))
-        
+
         if self.cutv:
             pix_= pix__ = 1000
             reverse = False
@@ -1433,27 +1433,27 @@ class Relief(Basedata, Basemethods):  # ========================================
                 pix_= 1000
                 ol.append(gc.G01(z=z0))
         return ol
-        
+
     def Calc(self):
         print("Start...")
-        print self.image.format
-        print self.image.size
-        print self.image.mode
+        print(self.image.format)
+        print(self.image.size)
+        print(self.image.mode)
         #print self.image.getcolors()
-        print max(list(self.image.getdata()))
-        print min(list(self.image.getdata()))
+        print(max(list(self.image.getdata())))
+        print(min(list(self.image.getdata())))
         #pix = self.image.load()
         #print pix[0,0]
         #print self.image.getpixel(10, 20)
         print("...End")
-        
+
     def LoadImage(self, fn):
         """Loads the given image file"""
         try:
             self.image = Image.open(fn)
             self.image = self.image.rotate(180)
             self.image_width, self.image_height = self.image.size
-            self.fn_image = fn 
+            self.fn_image = fn
             return self.image
         except:
             self.image = None
@@ -1463,14 +1463,14 @@ class Relief(Basedata, Basemethods):  # ========================================
 
 class Subroutine(Basemethods):  # ==============================================
     """Generate g-code with subroutines"""
-    
+
     name="Subroutine"
     description="NGC subroutine"
     i = 0
-    
+
     def __init__(self):         # ==== MANDATORY METHOD ====
         self.__class__.i += 1
-        
+
         self.objectname = self.name + "_" + str(self.i)
         self.number = None                                                      # number of the routine
         self.valuelist = []                                                     # list of values to pass to the subroutine
@@ -1498,15 +1498,15 @@ class Subroutine(Basemethods):  # ==============================================
 
 class Counterbore(Basedata, Basemethods):  # ===================================
     """Generate g-code for TEMPLATE"""
-    
+
     name="Counterbore"
     description="Counterbore"
     i = 0
-    
+
     def __init__(self, d=1, d1=1, d2=1, T=1, t=0):
         self.__class__.i += 1
         super(Counterbore, self).__init__()
-        
+
         self.d = d                  # through hole diameter
         self.T = T                  # Sinkhole depth
         self.d1 = d1                # Head sinkhole diameter
@@ -1542,7 +1542,7 @@ class Counterbore(Basedata, Basemethods):  # ===================================
         ol.append(gc.G(61))
         ol += self.DefaultPostamble()
         return ol
-        
+
     def PocketCircle(self,fn,z0,z1,zi,ri,ra,dr):
         ol = []
         if ri>=ra:
@@ -1572,21 +1572,21 @@ class Counterbore(Basedata, Basemethods):  # ===================================
                 ol.append(fn(x=r, y=0, i=-r, j=0, f=self.frso))
             ol.append(fn(x=0, y=r, i=-r, j=0, f=self.frso))
         return ol
-        
+
     class Positions():
         def __init__(self, x=0, y=0, z=0):
             self.x = x
             self.y = y
             self.z = z
 
-        
+
 class TEMPLATE(Basedata, Basemethods):  # ======================================
     """Generate g-code for TEMPLATE"""
-    
+
     name="PocketCircle"
     description="Pocketing a circle"
     i = 0
-    
+
     def __init__(self):         # ==== MANDATORY METHOD ====
         self.__class__.i += 1
         super(PocketCircle, self).__init__()
@@ -1601,7 +1601,7 @@ class TEMPLATE(Basedata, Basemethods):  # ======================================
     def Update(self):           # ==== MANDATORY METHOD ====
         """Calculates the path for the nc-object and returns it as a list of gcode-objects"""
         if not self.ParametersOk(): return [gc.COMMENT("PARAMETER ERROR")]  # ==== RECOMMENDED CALL ====
-        
+
         ol = self.DefaultPreamble()
         ol.append(gc.G00(x=0, y=0, c="Rapid move to start point"))
         ol.append(gc.G00(z=self.z0 + self.zsh0, c="Rapid down to workpiece"))

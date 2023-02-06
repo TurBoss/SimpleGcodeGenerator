@@ -23,10 +23,10 @@ Version   Author          Changes:
 """
 
 import glob
-import ConfigParser
+import configparser
 import csv
 
-VERSION = "170725"                                                              # version of this file (jjmmtt)
+VERSION = "230206"                                                              # version of this file (jjmmtt)
 
 DIR = ""                                                                        # 
 TABLES = []                                                                     # List of instances of <Table>
@@ -34,10 +34,10 @@ TABLES = []                                                                     
 
 def Init():  # =================================================================
     """Initialises the module"""
-    config = ConfigParser.ConfigParser()
+    config = configparser.ConfigParser()
     config.read('sgg.ini')
     global DIR
-    DIR = config.get('SIMPLEGCODEGENERATOR', 'SGG_FEEDSNSPEEDS_DIR', 0)
+    DIR = config.get('SIMPLEGCODEGENERATOR', 'SGG_FEEDSNSPEEDS_DIR')
     if not LoadAllTables(""):
         print("Error loading feeds'n'speeds table.")
 

@@ -28,9 +28,9 @@ ToDo
 
 import re
 import glob
-import ConfigParser
+import configparser
 
-VERSION = "170708"                                                              # version of this file (jjmmtt)
+VERSION = "230206"                                                              # version of this file (jjmmtt)
 
 PATH = ""                                                                       # path where to find the subroutines
 SUBROUTINES = []                                                                # list of instances of <Sub>
@@ -38,13 +38,13 @@ SUBROUTINES = []                                                                
 
 def Init():  # =================================================================
     """Initialises the module"""
-    config = ConfigParser.ConfigParser()
+    config = configparser.ConfigParser()
     config.read('sgg.ini')
     global PATH
-    PATH = config.get('SIMPLEGCODEGENERATOR', 'SGG_SUBROUTINES_DIR', 0)
+    PATH = config.get('SIMPLEGCODEGENERATOR', 'SGG_SUBROUTINES_DIR')
     if not LoadAllSubroutines(""):
         print("Error loading subroutines. Check path in the file <sgg.ini>.")
-        
+
 
 class Param(object):  # ========================================================
     """Holds a parameter name, paremeter number (1-30) and comment if available"""
@@ -52,7 +52,7 @@ class Param(object):  # ========================================================
         self.name = name                                                        # name of the parameter
         self.number = number                                                    # number of the parameter
         self.comment = comment                                                  # comment for the parameter
-        
+
     def __repr__(self):
         return "Parameters([%s, %s, %s])" % (self.name, self.number, self.comment)
 
@@ -107,6 +107,6 @@ def ParseNgcSub(fn):  # ========================================================
         if not name: return None
         return Sub(name,code,parameters)
     except Exception as e:
-        print e
+        print(e)
         return None
-        
+

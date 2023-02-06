@@ -22,11 +22,11 @@ Version   Author          Changes:
 """
 
 import math
-import mathutils as mu                                                          # import math helper functions
-import gcode as gc                                                              # import basic g-code classes
-import utils                                                                    # common utility functions
+from . import mathutils as mu                                                          # import math helper functions
+from . import gcode as gc                                                              # import basic g-code classes
+from . import utils                                                                    # common utility functions
 
-VERSION = "170708"                                                             # version of this file (jjmmtt)
+VERSION = "230206"                                                             # version of this file (jjmmtt)
 
 
 def CalcRPM(vc,d):  # ==========================================================
@@ -51,7 +51,7 @@ def PocketRectangle(x,y,z,frtd,frso,r=[0,0,0,0], c=False):
         Creates a list of g-code instances
     """
     ol = []
-    
+
     return ol
 
 

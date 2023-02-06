@@ -29,9 +29,9 @@ Handling of different number formats in <DrillTable> needs improvement.
 
 import csv
 import glob
-import ConfigParser
+import configparser
 
-VERSION = "170708"                                                              # version of this file (jjmmtt)
+VERSION = "230206"                                                              # version of this file (jjmmtt)
 
 DIR = ""                                                                        # Directory of the counterbore tables
 TABLES = []                                                                     # List of instances of <Table>
@@ -39,10 +39,10 @@ TABLES = []                                                                     
 
 def Init():  # =================================================================
     """Initialises the module"""
-    config = ConfigParser.ConfigParser()
+    config = configparser.ConfigParser()
     config.read('sgg.ini')
     global DIR
-    DIR = config.get('SIMPLEGCODEGENERATOR', 'SGG_COUNTERBORE_DIR', 0)
+    DIR = config.get('SIMPLEGCODEGENERATOR', 'SGG_COUNTERBORE_DIR')
     if not LoadAllTables(""):
         print("Error loading counter bore table. Check path in the file <sgg.ini>.")
 
@@ -64,10 +64,10 @@ class Data():  # ===============================================================
         except: self.d2 = 0
         try:    self.T = float(T.replace(",","."))
         except: self.T = 0
-        
+
     def GetHeaders(self):
         return ["Name","d","d1","d2","T"]
-        
+
     def __repr__(self):
         return "%s %s %s %s %s\n" % (self.name, self.d, self.d1, self.d2, self.T)
 
@@ -125,4 +125,4 @@ def LoadTable(fn):  # =====================================================
     file.close()
     return Table(fn, description, table)
 
-        
+
