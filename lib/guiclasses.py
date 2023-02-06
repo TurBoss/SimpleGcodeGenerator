@@ -1178,9 +1178,9 @@ class Subroutine(object):  # ===================================================
         self.winoffsetx = winoffsetx
         self.winoffsety = winoffsety
 
-        self.objectname = tk.StringVar(0, "")
-        self.name = tk.StringVar(0, "")
-        self.incsub = tk.BooleanVar(0, True)
+        self.objectname = tk.StringVar(self.root, "")
+        self.name = tk.StringVar(self.root, "")
+        self.incsub = tk.BooleanVar(self.root, True)
         self.number = None
 
         self.win = tk.Toplevel(root)
