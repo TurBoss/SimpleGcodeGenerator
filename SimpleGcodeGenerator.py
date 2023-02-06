@@ -43,24 +43,24 @@ import tkinter.filedialog
 import os
 import sys
 
-from lib import sgg                                                             # import the nc-logic
-from lib import widgets                                                         # import widgets
-from lib import guiclasses                                                      # import gui for nc-objects
-from lib import utils                                                           # import utility module
-from lib import ncclasses                                                       # import the module for version info only
-from lib import gcode                                                           # import the module for version info only
-from lib import mathutils                                                       # import the module for version info only
-from lib import font2vector                                                     # import the module for version info only
-from lib import tooltable                                                       # import the module for version info only
-from lib import ngcsub                                                          # import the module for version info only
-from lib import counterbore                                                     # import the module for version info only
-from lib import nclib                                                           # import the module for version info only
-from lib import feedsnspeeds                                                    # import the module for version info only
+from lib import sgg  # import the nc-logic
+from lib import widgets  # import widgets
+from lib import guiclasses  # import gui for nc-objects
+from lib import utils  # import utility module
+from lib import ncclasses  # import the module for version info only
+from lib import gcode  # import the module for version info only
+from lib import mathutils  # import the module for version info only
+from lib import font2vector  # import the module for version info only
+from lib import tooltable  # import the module for version info only
+from lib import ngcsub  # import the module for version info only
+from lib import counterbore  # import the module for version info only
+from lib import nclib  # import the module for version info only
+from lib import feedsnspeeds  # import the module for version info only
 
-VERSION = "230206"                                                              # version of this file (jjmmdd)
-APP_VERSION = "3.7.0"                                                           # overall application version
-APP_NAME = sgg.APP + " " + APP_VERSION                                          # application name
-TIME_UPDATE = 500                                                               # polling interval to update the generated g-code
+VERSION = "230206"  # version of this file (jjmmdd)
+APP_VERSION = "3.7.0"  # overall application version
+APP_NAME = sgg.APP + " " + APP_VERSION  # application name
+TIME_UPDATE = 500  # polling interval to update the generated g-code
 
 
 class MainGUI(tk.Frame, widgets.Widgets):  # ===================================
@@ -72,17 +72,17 @@ class MainGUI(tk.Frame, widgets.Widgets):  # ===================================
         self.grid(sticky="NW")
         master.wm_resizable(0, 0)
         master.protocol("WM_DELETE_WINDOW", self.QuitHandler)
-        self.sgg = sgg.sgg()                                                    # create instance of the logic
-        self.numlinesoutput = tk.StringVar(self, 0,"")                                # number of lines of current g-code output
-        self.output = ""                                                        # copy of the current g-code output
-        self.CreateWidgets()                                                    # populate the main gui with widgets
-        self.lb_ncClasses.delete(0, tk.END)                                     # initialise the gui (fill the <create objects> listbox)
+        self.sgg = sgg.sgg()  # create instance of the logic
+        self.numlinesoutput = tk.StringVar(self, 0, "")  # number of lines of current g-code output
+        self.output = ""  # copy of the current g-code output
+        self.CreateWidgets()  # populate the main gui with widgets
+        self.lb_ncClasses.delete(0, tk.END)  # initialise the gui (fill the <create objects> listbox)
         for o in ncclasses.NCCLASSES:
             self.lb_ncClasses.insert(tk.END, o.name)
-        self.ObjectListbox_update()                                             # update the <generated objects> listbox with generated objects
-        self.SetTitle()                                                         # set the title of the application window
+        self.ObjectListbox_update()  # update the <generated objects> listbox with generated objects
+        self.SetTitle()  # set the title of the application window
         self.InitGuiList()
-        self.CheckForUpdate()                                                   # start polling for updates
+        self.CheckForUpdate()  # start polling for updates
 
     def SetTitle(self, filename=""):
         """Sets the title of the application"""
@@ -95,14 +95,14 @@ class MainGUI(tk.Frame, widgets.Widgets):  # ===================================
         try: self.guilist[self.gui_active_index].Destroy()
         except: pass
         self.gui_active_index = None
-        self.guilist = []                                                       # list that holds all reated gui for nc-objects
-        for i in range(len(self.sgg.objlist)):                                  # fill the the list with dummies
+        self.guilist = []  # list that holds all reated gui for nc-objects
+        for i in range(len(self.sgg.objlist)):  # fill the the list with dummies
             self.guilist.append(None)
 
     def CheckForUpdate(self):
         """Updates the output if neccessary every n milliseconds"""
         new = self.sgg.GetGcode()
-        if not new==self.output:
+        if not new == self.output:
             self.output = new
             self.tbOutput.delete(1.0, tk.END)
             self.tbOutput.insert(tk.END, self.output)
@@ -115,23 +115,23 @@ class MainGUI(tk.Frame, widgets.Widgets):  # ===================================
 
     def QuitHandler(self):
         """Handles quit of the application"""
-        self.master.destroy()                                                   # destroy root window
-        self.master.quit()                                                      # Quit main loop
+        self.master.destroy()  # destroy root window
+        self.master.quit()  # Quit main loop
 
     def ObjectCreate(self, gui=True):
         """Creates a new nc-object, based on the selected class"""
-        class_selected = int(self.lb_ncClasses.curselection()[0])               #determine selected class
-        target_index = self.lb_ncObjects.curselection()                         #determine list position to insert the new object
+        class_selected = int(self.lb_ncClasses.curselection()[0])  # determine selected class
+        target_index = self.lb_ncObjects.curselection()  # determine list position to insert the new object
         if target_index: target_index = int(target_index[0])
-        else:            target_index = int(self.lb_ncObjects.index(tk.END))
-        obj = self.sgg.ObjectCreate(class_selected, target_index)               # create new object
-        self.ObjectListbox_update()                                             # update listbox of created objects
-        self.lb_ncObjects.selection_set(target_index+1)                         # select the newly generated object in the listbox
-        self.lb_ncObjects.see(target_index+1)                                   # adjust the the listbox to show the active item
-        try: self.guilist[self.gui_active_index].Hide()                         # hide the current gui
+        else: target_index = int(self.lb_ncObjects.index(tk.END))
+        obj = self.sgg.ObjectCreate(class_selected, target_index)  # create new object
+        self.ObjectListbox_update()  # update listbox of created objects
+        self.lb_ncObjects.selection_set(target_index + 1)  # select the newly generated object in the listbox
+        self.lb_ncObjects.see(target_index + 1)  # adjust the the listbox to show the active item
+        try: self.guilist[self.gui_active_index].Hide()  # hide the current gui
         except: pass
-        self.guilist.insert(target_index+1, guiclasses.GUICLASSES[class_selected](root, obj))   # create gui and hand over a reference of the nc-object
-        self.gui_active_index = target_index+1
+        self.guilist.insert(target_index + 1, guiclasses.GUICLASSES[class_selected](root, obj))  # create gui and hand over a reference of the nc-object
+        self.gui_active_index = target_index + 1
 
     def ObjectDelete(self, *dummy):
         """Deletes the selected object"""
@@ -153,7 +153,7 @@ class MainGUI(tk.Frame, widgets.Widgets):  # ===================================
             utils.ListItemsMoveUp(self.guilist, indexes)
             indexes = self.sgg.ObjectsMoveUp(indexes)
             self.ObjectListbox_update(indexes)
-            if self.gui_active_index>1: self.gui_active_index-=1
+            if self.gui_active_index > 1: self.gui_active_index -= 1
         try: self.guilist[self.gui_active_index].lift()
         except: pass
 
@@ -164,7 +164,7 @@ class MainGUI(tk.Frame, widgets.Widgets):  # ===================================
             utils.ListItemsMoveDown(self.guilist, indexes)
             indexes = self.sgg.ObjectsMoveDown(indexes)
             self.ObjectListbox_update(indexes)
-            if self.gui_active_index<len(self.guilist): self.gui_active_index+=1
+            if self.gui_active_index < len(self.guilist): self.gui_active_index += 1
         try: self.guilist[self.gui_active_index].lift()
         except: pass
 
@@ -175,7 +175,7 @@ class MainGUI(tk.Frame, widgets.Widgets):  # ===================================
            tkinter.messagebox.askokcancel("Dublicate", "Dublictae selected object?"):
             index = int(index[0])
             i = self.sgg.ObjectDublicate(index)
-            self.guilist.insert(index+1, None)
+            self.guilist.insert(index + 1, None)
             self.ObjectListbox_update(i)
             self.ObjectEdit()
 
@@ -184,7 +184,7 @@ class MainGUI(tk.Frame, widgets.Widgets):  # ===================================
         oi = self.lb_ncObjects.curselection()
         if oi:
             oi = int(oi[0])
-            if not self.gui_active_index==oi:
+            if not self.gui_active_index == oi:
                 try: self.guilist[self.gui_active_index].Hide()
                 except: pass
             try:
@@ -199,7 +199,7 @@ class MainGUI(tk.Frame, widgets.Widgets):  # ===================================
         self.lb_ncObjects.delete(0, tk.END)
         for n in self.sgg.GetObjectNames():
             self.lb_ncObjects.insert(tk.END, n)
-        if not indexes==None:
+        if not indexes == None:
             try:
                 for i in indexes:
                     self.lb_ncObjects.selection_set(i)
@@ -221,8 +221,8 @@ class MainGUI(tk.Frame, widgets.Widgets):  # ===================================
     def ProjectInsert(self):
         """Loads a project"""
         index = self.lb_ncObjects.curselection()
-        if index:   index = int(index[0])+1
-        else:       index = int(self.lb_ncObjects.index(tk.END))
+        if index: index = int(index[0]) + 1
+        else: index = int(self.lb_ncObjects.index(tk.END))
         filename = widgets.AskOpenFile("Load project", "~", sgg.PROJECTFILE_DEFAULT, "Simple Gcode Generator", "*." + sgg.PROJECTFILE_EXTENSION)
         if not filename: return
         self.sgg.LoadProject(filename, index)
@@ -251,7 +251,7 @@ class MainGUI(tk.Frame, widgets.Widgets):  # ===================================
 
     def GcodeSave(self):
         """Saves the g-code to the current file"""
-        if not self.sgg.fn_output=="" and tkinter.messagebox.askokcancel("Save", "Overwrite existing file?"):
+        if not self.sgg.fn_output == "" and tkinter.messagebox.askokcancel("Save", "Overwrite existing file?"):
             if not self.sgg.SaveGcode(self.sgg.fn_output):
                 tkinter.messagebox.showerror("ERROR", "Error saving gcode")
 
@@ -285,11 +285,11 @@ class MainGUI(tk.Frame, widgets.Widgets):  # ===================================
         if self.sgg.fn_output:
             if self.sgg.SaveGcode(self.sgg.fn_output):
                 retval = self.sgg.AxisLoad()
-                if not retval==0:
+                if not retval == 0:
                     tkinter.messagebox.showerror("ERROR", "LinuxCNC reload error.\nReturncode:" + str(retval))
             else:
                 tkinter.messagebox.showerror("Error saving gcode")
-        try:    self.guilist[self.gui_active_index].lift()
+        try: self.guilist[self.gui_active_index].lift()
         except: pass
 
     def ProjectReset(self):
@@ -338,8 +338,8 @@ class MainGUI(tk.Frame, widgets.Widgets):  # ===================================
 
     def CreateWidgets(self):
         """Create the widgets for the gui"""
-        if not sgg.IN_AXIS: state = tk.DISABLED # application started stand alone
-        else:               state = tk.NORMAL   # application started from AXIS
+        if not sgg.IN_AXIS: state = tk.DISABLED  # application started stand alone
+        else: state = tk.NORMAL  # application started from AXIS
 
         self.menu = tk.Frame(self, bd=5)
         self.menu.grid(column=0, row=0, sticky="NEW")

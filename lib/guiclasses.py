@@ -35,6 +35,7 @@ Version   Author          Changes:
 170625    Erik Schuster   Reduced code length by optimised read and write to ncclasses.
                           Added class <Counterbore>.
 170709    Erik Schuster   Added class <FeedAndSpeed>.
+230206    TurBoss         Port to Python3.
 
 ToDo:
 - The tooltip ist not displayed at the correct position if the root window was moved.
@@ -491,31 +492,29 @@ class OutlineRectangle(Baseclass, widgets.Widgets):  # =========================
         """Init variables and create widgets"""
         super(OutlineRectangle, self).__init__(root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY)
 
-        self.root = root
-
-        self.w = tk.DoubleVar(self.root, 50)
-        self.h = tk.DoubleVar(self.root, 25)
-        self.contour = tk.IntVar(self.root, 0)
-        self.climb = tk.BooleanVar(self.root, True)
-        self.br = tk.BooleanVar(self.root, True)
-        self.brw = tk.DoubleVar(self.root, 2.0)
-        self.brh = tk.DoubleVar(self.root, 1.0)
-        self.rsx = tk.DoubleVar(self.root, 0.0)
-        self.rsy = tk.DoubleVar(self.root, 0.0)
-        self.rsdeg = tk.DoubleVar(self.root, 0.0)
+        self.w = tk.DoubleVar(self.win, 50)
+        self.h = tk.DoubleVar(self.win, 25)
+        self.contour = tk.IntVar(self.win, 0)
+        self.climb = tk.BooleanVar(self.win, True)
+        self.br = tk.BooleanVar(self.win, True)
+        self.brw = tk.DoubleVar(self.win, 2.0)
+        self.brh = tk.DoubleVar(self.win, 1.0)
+        self.rsx = tk.DoubleVar(self.win, 0.0)
+        self.rsy = tk.DoubleVar(self.win, 0.0)
+        self.rsdeg = tk.DoubleVar(self.win, 0.0)
 
         self.parlist += ["w", "h", "contour", "climb", "br", "brw", "brh", "rsx", "rsy", "rsdeg"]
 
-        self.LabelEntry(self.root, 4, 3, 1, 10, self.w, "Width", "mm,in")
-        self.LabelEntry(self.root, 4, 4, 1, 10, self.h, "Height", "mm,in")
-        wi.Radiobuttons(self.root, self.contour, "Contour", [["inside", ""], ["exact", ""], ["outside", ""]], columns=1, column=4, row=5)
-        self.Optionbutton(self.root, 4, 13, 1, self.br, "Bridges", "If checked, bridges with the given\nwidth and height are added.")
-        self.entry_brw = self.LabelEntry(self.root, 4, 14, 1, 10, self.brw, "Bridges width", "mm,in")
-        self.entry_brh = self.LabelEntry(self.root, 4, 15, 1, 10, self.brh, "Bridges height", "mm,in")
-        self.LabelEntry(self.root, 4, 8, 1, 10, self.rsx, "Shape rotation x", "from shape center - mm,in")
-        self.LabelEntry(self.root, 4, 9, 1, 10, self.rsy, "Shape rotation y", "from shape center - mm,in")
-        self.LabelEntry(self.root, 4, 10, 1, 10, self.rsdeg, "Shape rotation", "°")
-        wi.Radiobuttons(self.root, self.climb, "Machining\ndirection", [["conventional", ""], ["climb", ""]], columns=1, column=4, row=17)
+        self.LabelEntry(self.win, 4, 3, 1, 10, self.w, "Width", "mm,in")
+        self.LabelEntry(self.win, 4, 4, 1, 10, self.h, "Height", "mm,in")
+        wi.Radiobuttons(self.win, self.contour, "Contour", [["inside", ""], ["exact", ""], ["outside", ""]], columns=1, column=4, row=5)
+        self.Optionbutton(self.win, 4, 13, 1, self.br, "Bridges", "If checked, bridges with the given\nwidth and height are added.")
+        self.entry_brw = self.LabelEntry(self.win, 4, 14, 1, 10, self.brw, "Bridges width", "mm,in")
+        self.entry_brh = self.LabelEntry(self.win, 4, 15, 1, 10, self.brh, "Bridges height", "mm,in")
+        self.LabelEntry(self.win, 4, 8, 1, 10, self.rsx, "Shape rotation x", "from shape center - mm,in")
+        self.LabelEntry(self.win, 4, 9, 1, 10, self.rsy, "Shape rotation y", "from shape center - mm,in")
+        self.LabelEntry(self.win, 4, 10, 1, 10, self.rsdeg, "Shape rotation", "°")
+        wi.Radiobuttons(self.win, self.climb, "Machining\ndirection", [["conventional", ""], ["climb", ""]], columns=1, column=4, row=17)
 
         self.GetDataFromLogic()
         self.WriteDataToLogic()
@@ -539,23 +538,21 @@ class OutlineCircle(Baseclass, widgets.Widgets):  # ============================
         """Init variables and create widgets"""
         super(OutlineCircle, self).__init__(root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY)
 
-        self.root = root
-
-        self.r = tk.DoubleVar(self.root, 10.0)
-        self.contour = tk.IntVar(self.root, 0)
-        self.climb = tk.BooleanVar(self.root, True)
-        self.br = tk.BooleanVar(self.root, True)
-        self.brw = tk.DoubleVar(self.root, 2.0)
-        self.brh = tk.DoubleVar(self.root, 1.0)
+        self.r = tk.DoubleVar(self.win, 10.0)
+        self.contour = tk.IntVar(self.win, 0)
+        self.climb = tk.BooleanVar(self.win, True)
+        self.br = tk.BooleanVar(self.win, True)
+        self.brw = tk.DoubleVar(self.win, 2.0)
+        self.brh = tk.DoubleVar(self.win, 1.0)
 
         self.parlist += ["r", "contour", "climb", "br", "brw", "brh"]
 
-        self.LabelEntry(self.root, 4, 3, 1, 10, self.r, "Radius", "mm,in")
-        wi.Radiobuttons(self.root, self.contour, "Contour", [["inside", ""], ["exact", ""], ["outside", ""]], columns=1, column=4, row=4)
-        self.Optionbutton(self.root, 4, 7, 1, self.br, "Bridges", "If checked, bridges with the given\nwidth and height are added.")
-        self.entry_brw = self.LabelEntry(self.root, 4, 8, 1, 10, self.brw, "Bridges width", "mm,in")
-        self.entry_brh = self.LabelEntry(self.root, 4, 9, 1, 10, self.brh, "Bridges height", "mm,in")
-        wi.Radiobuttons(self.root, self.climb, "Machining\ndirection", [["conventional", ""], ["climb", ""]], columns=1, column=4, row=17)
+        self.LabelEntry(self.win, 4, 3, 1, 10, self.r, "Radius", "mm,in")
+        wi.Radiobuttons(self.win, self.contour, "Contour", [["inside", ""], ["exact", ""], ["outside", ""]], columns=1, column=4, row=4)
+        self.Optionbutton(self.win, 4, 7, 1, self.br, "Bridges", "If checked, bridges with the given\nwidth and height are added.")
+        self.entry_brw = self.LabelEntry(self.win, 4, 8, 1, 10, self.brw, "Bridges width", "mm,in")
+        self.entry_brh = self.LabelEntry(self.win, 4, 9, 1, 10, self.brh, "Bridges height", "mm,in")
+        wi.Radiobuttons(self.win, self.climb, "Machining\ndirection", [["conventional", ""], ["climb", ""]], columns=1, column=4, row=17)
 
         self.GetDataFromLogic()
         self.WriteDataToLogic()
@@ -579,22 +576,22 @@ class OutlineEllipse(Baseclass, widgets.Widgets):  # ===========================
         """Init variables and create widgets"""
         super(OutlineEllipse, self).__init__(root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY)
 
-        self.a = tk.DoubleVar(0, 10)
-        self.b = tk.DoubleVar(0, 20)
-        self.ai = tk.IntVar(0, 5)
-        self.contour = tk.IntVar(0, 1)
-        self.climb = tk.BooleanVar(0, True)
-        self.br = tk.BooleanVar(0, True)
-        self.brw = tk.DoubleVar(0, 2)
-        self.brh = tk.DoubleVar(0, 1)
+        self.a = tk.DoubleVar(self.win, 10.0)
+        self.b = tk.DoubleVar(self.win, 20.0)
+        self.ai = tk.IntVar(self.win, 5)
+        self.contour = tk.IntVar(self.win, 1)
+        self.climb = tk.BooleanVar(self.win, True)
+        self.br = tk.BooleanVar(self.win, True)
+        self.brw = tk.DoubleVar(self.win, 2.0)
+        self.brh = tk.DoubleVar(self.win, 1.0)
 
         self.parlist += ["a", "b", "ai", "contour", "climb", "br", "brw", "brh"]
 
-        self.LabelEntry(self, 4, 3, 1, 10, self.a, "A", "mm,in")
-        self.LabelEntry(self, 4, 4, 1, 10, self.b, "B", "mm,in")
-        self.LabelEntry(self, 4, 5, 1, 10, self.ai, "Angle resolution", "°")
-        wi.Radiobuttons(self, self.contour, "Contour", [["inside", ""], ["exact", ""], ["outside", ""]], columns=1, column=4, row=6)
-        wi.Radiobuttons(self, self.climb, "Machining\ndirection", [["conventional", ""], ["climb", ""]], columns=1, column=4, row=17)
+        self.LabelEntry(self.win, 4, 3, 1, 10, self.a, "A", "mm,in")
+        self.LabelEntry(self.win, 4, 4, 1, 10, self.b, "B", "mm,in")
+        self.LabelEntry(self.win, 4, 5, 1, 10, self.ai, "Angle resolution", "°")
+        wi.Radiobuttons(self.win, self.contour, "Contour", [["inside", ""], ["exact", ""], ["outside", ""]], columns=1, column=4, row=6)
+        wi.Radiobuttons(self.win, self.climb, "Machining\ndirection", [["conventional", ""], ["climb", ""]], columns=1, column=4, row=17)
 
         self.GetDataFromLogic()
         self.WriteDataToLogic()
@@ -602,7 +599,7 @@ class OutlineEllipse(Baseclass, widgets.Widgets):  # ===========================
     def WriteDataToLogic(self):
         """Update the ncclass with the data from the gui"""
         self.WriteBaseDataToLogic()
-        self.after = self.after(TIME_UPDATE, self.WriteDataToLogic)
+        self.after = self.win.after(TIME_UPDATE, self.WriteDataToLogic)
 
 
 class OutlinePolygon(Baseclass, widgets.Widgets):  # ===========================
@@ -612,38 +609,38 @@ class OutlinePolygon(Baseclass, widgets.Widgets):  # ===========================
         """Init variables and create widgets"""
         super(OutlinePolygon, self).__init__(root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY)
 
-        self.scalex = tk.DoubleVar(0, 20)
-        self.scaley = tk.DoubleVar(0, 20)
-        self.x = tk.DoubleVar(0, 10)
-        self.y = tk.DoubleVar(0, 5)
-        self.cc = tk.IntVar(0, 2)
-        self.close = tk.BooleanVar(0, True)
-        self.rsx = tk.DoubleVar(0)
-        self.rsy = tk.DoubleVar(0)
-        self.rsdeg = tk.DoubleVar(0)
-        self.g64 = tk.DoubleVar(0, 0.01)
+        self.scalex = tk.DoubleVar(self.win, 20.0)
+        self.scaley = tk.DoubleVar(self.win, 20.0)
+        self.x = tk.DoubleVar(self.win, 10.0)
+        self.y = tk.DoubleVar(self.win, 5.0)
+        self.cc = tk.IntVar(self.win, 2)
+        self.close = tk.BooleanVar(self.win, True)
+        self.rsx = tk.DoubleVar(self.win, 0.0)
+        self.rsy = tk.DoubleVar(self.win, 0.0)
+        self.rsdeg = tk.DoubleVar(self.win, 0.0)
+        self.g64 = tk.DoubleVar(self.win, 0.01)
 
         self.parlist += ["scalex", "scaley", "x", "y", "cc", "close", "rsx", "rsy", "rsdeg", "g64"]
 
-        self.LabelEntry(self, 4, 3, 1, 10, self.scalex, "scale x", "#, scale factor for x values in the list")
-        self.LabelEntry(self, 4, 4, 1, 10, self.scaley, "scale y", "#, scale factor for y values in the list")
-        self.LabelEntry(self, 4, 5, 1, 10, self.rsx, "Shape rotation x", "mm,in")
-        self.LabelEntry(self, 4, 6, 1, 10, self.rsy, "Shape rotation y", "mm,in")
-        self.LabelEntry(self, 4, 7, 1, 10, self.rsdeg, "Shape rotation", "°")
-        self.LabelEntry(self, 4, 8, 1, 10, self.g64, "Path blending\n(G64)", "mm,in")
-        wi.Radiobuttons(self, self.cc, "Cutter\ncompensation", [["none", "G40"], ["left", "G41"], ["right", "G42"]], columns=1, column=4, row=10)
-        self.LabelEntry(self, 4, 15, 1, 10, self.x, "x", "Selected/new x-value")
-        self.LabelEntry(self, 4, 16, 1, 10, self.y, "y", "Selected/new y-value")
-        tk.Button(self, text="Update\n xy-value", command=self.ObjectUpdate).grid(column=4, row=15, rowspan=2)
-        self.Optionbutton(self, 4, 13, 1, self.close, "Close polygon", "Last position = First position")
-        tk.Label(self, text="List of positions", justify="center").grid(column=7, row=3, columnspan=2, padx=0, pady=2, sticky="ew")
-        self.lb = self.ListboxWithScrollbar(self, column=7, row=4, columnspan=2, rowspan=9, height=13, width=25, selectmode=tk.EXTENDED)
+        self.LabelEntry(self.win, 4, 3, 1, 10, self.scalex, "scale x", "#, scale factor for x values in the list")
+        self.LabelEntry(self.win, 4, 4, 1, 10, self.scaley, "scale y", "#, scale factor for y values in the list")
+        self.LabelEntry(self.win, 4, 5, 1, 10, self.rsx, "Shape rotation x", "mm,in")
+        self.LabelEntry(self.win, 4, 6, 1, 10, self.rsy, "Shape rotation y", "mm,in")
+        self.LabelEntry(self.win, 4, 7, 1, 10, self.rsdeg, "Shape rotation", "°")
+        self.LabelEntry(self.win, 4, 8, 1, 10, self.g64, "Path blending\n(G64)", "mm,in")
+        wi.Radiobuttons(self.win, self.cc, "Cutter\ncompensation", [["none", "G40"], ["left", "G41"], ["right", "G42"]], columns=1, column=4, row=10)
+        self.LabelEntry(self.win, 4, 15, 1, 10, self.x, "x", "Selected/new x-value")
+        self.LabelEntry(self.win, 4, 16, 1, 10, self.y, "y", "Selected/new y-value")
+        tk.Button(self.win, text="Update\n xy-value", command=self.ObjectUpdate).grid(column=4, row=15, rowspan=2)
+        self.Optionbutton(self.win, 4, 13, 1, self.close, "Close polygon", "Last position = First position")
+        tk.Label(self.win, text="List of positions", justify="center").grid(column=7, row=3, columnspan=2, padx=0, pady=2, sticky="ew")
+        self.lb = self.ListboxWithScrollbar(self.win, column=7, row=4, columnspan=2, rowspan=9, height=13, width=25, selectmode=tk.EXTENDED)
         self.lb.bind("<Double-1>", lambda x: self.ObjectEdit())
-        tk.Button(self, text="Move up", command=self.ObjectsMoveUp).grid(column=7, row=13, rowspan=2)
-        tk.Button(self, text="Move down", command=self.ObjectsMoveDown).grid(column=8, row=13, rowspan=2)
-        tk.Button(self, text="Delete", command=self.ObjectDelete).grid(column=8, row=15, columnspan=1, rowspan=2)
-        tk.Button(self, command=self.Import, text="Import file").grid(column=7, row=17, rowspan=2, columnspan=2)
-        tk.Button(self, text="Insert G01", command=self.ObjectInsert).grid(column=7, row=15, rowspan=2)
+        tk.Button(self.win, text="Move up", command=self.ObjectsMoveUp).grid(column=7, row=13, rowspan=2)
+        tk.Button(self.win, text="Move down", command=self.ObjectsMoveDown).grid(column=8, row=13, rowspan=2)
+        tk.Button(self.win, text="Delete", command=self.ObjectDelete).grid(column=8, row=15, columnspan=1, rowspan=2)
+        tk.Button(self.win, command=self.Import, text="Import file").grid(column=7, row=17, rowspan=2, columnspan=2)
+        tk.Button(self.win, text="Insert G01", command=self.ObjectInsert).grid(column=7, row=15, rowspan=2)
 
         self.GetDataFromLogic()
         self.WriteDataToLogic()
@@ -652,7 +649,7 @@ class OutlinePolygon(Baseclass, widgets.Widgets):  # ===========================
     def WriteDataToLogic(self):
         """Update the ncclass with the data from the gui"""
         self.WriteBaseDataToLogic()
-        self.after = self.after(TIME_UPDATE, self.WriteDataToLogic)
+        self.after = self.win.after(TIME_UPDATE, self.WriteDataToLogic)
 
     def Import(self):
         """Import a dat file (eg. for airfoils"""
@@ -736,17 +733,17 @@ class PocketRectangle(Baseclass, widgets.Widgets):  # ==========================
         """Init variables and create widgets"""
         super(PocketRectangle, self).__init__(root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY)
 
-        self.w = tk.DoubleVar(0, 100)
-        self.h = tk.DoubleVar(0, 50)
-        self.climb = tk.BooleanVar(0, True)
-        self.corners = tk.BooleanVar(0, False)
+        self.w = tk.DoubleVar(self.win, 100.0)
+        self.h = tk.DoubleVar(self.win, 50.0)
+        self.climb = tk.BooleanVar(self.win, True)
+        self.corners = tk.BooleanVar(self.win, False)
 
         self.parlist += ["w", "h", "climb", "corners"]
 
-        self.LabelEntry(self, 4, 3, 1, 10, self.w, "Width", "mm,in")
-        self.LabelEntry(self, 4, 4, 1, 10, self.h, "Height", "mm,in")
-        self.Optionbutton(self, 4, 5, 1, self.corners, "Corners", "mill out corners")
-        wi.Radiobuttons(self, self.climb, "Machining\ndirection", [["conventional", ""], ["climb", ""]], columns=1, column=4, row=17)
+        self.LabelEntry(self.win, 4, 3, 1, 10, self.w, "Width", "mm,in")
+        self.LabelEntry(self.win, 4, 4, 1, 10, self.h, "Height", "mm,in")
+        self.Optionbutton(self.win, 4, 5, 1, self.corners, "Corners", "mill out corners")
+        wi.Radiobuttons(self.win, self.climb, "Machining\ndirection", [["conventional", ""], ["climb", ""]], columns=1, column=4, row=17)
 
         self.GetDataFromLogic()
         self.WriteDataToLogic()
@@ -762,11 +759,11 @@ class PocketCircle(Baseclass, widgets.Widgets):  # =============================
 
     def __init__(self, root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY):
         """Init variables and create widgets"""
-        self.win = super(PocketCircle, self).__init__(root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY)
+        super(PocketCircle, self).__init__(root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY)
 
-        self.ri = tk.DoubleVar(0, 10)
-        self.ra = tk.DoubleVar(0, 50)
-        self.climb = tk.BooleanVar(0, True)
+        self.ri = tk.DoubleVar(self.win, 10.0)
+        self.ra = tk.DoubleVar(self.win, 50.0)
+        self.climb = tk.BooleanVar(self.win, True)
 
         self.parlist += ["ri", "ra", "climb"]
 
@@ -788,13 +785,13 @@ class Grill(Baseclass, widgets.Widgets):  # ====================================
 
     def __init__(self, root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY):
         """Init variables and create widgets"""
-        self.win = super(Grill, self).__init__(root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY)
+        super(Grill, self).__init__(root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY)
 
-        self.w = tk.DoubleVar(0, 80)
-        self.h = tk.DoubleVar(0, 40)
-        self.shape = tk.IntVar(0)
-        self.dist = tk.DoubleVar(0, 2)
-        self.peck = tk.BooleanVar(0, False)
+        self.w = tk.DoubleVar(self.win, 80.0)
+        self.h = tk.DoubleVar(self.win, 40.0)
+        self.shape = tk.IntVar(self.win, 0)
+        self.dist = tk.DoubleVar(self.win, 2.0)
+        self.peck = tk.BooleanVar(self.win, False)
 
         self.parlist += ["w", "h", "shape", "dist", "peck"]
 
@@ -840,15 +837,15 @@ class Bezel(Baseclass, widgets.Widgets):  # ====================================
 
     def __init__(self, root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY):
         """Init variables and create widgets"""
-        self.win = super(Bezel, self).__init__(root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY)
+        super(Bezel, self).__init__(root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY)
 
-        self.ri = tk.DoubleVar(0, 50)
-        self.romaj = tk.DoubleVar(0, 50)
-        self.romin = tk.DoubleVar(0, 50)
-        self.a0 = tk.DoubleVar(0, 50)
-        self.a1 = tk.DoubleVar(0, 50)
-        self.div = tk.IntVar(0, 50)
-        self.divmaj = tk.IntVar(0, 50)
+        self.ri = tk.DoubleVar(self.win, 50.0)
+        self.romaj = tk.DoubleVar(self.win, 50.0)
+        self.romin = tk.DoubleVar(self.win, 50.0)
+        self.a0 = tk.DoubleVar(self.win, 50.0)
+        self.a1 = tk.DoubleVar(self.win, 50.0)
+        self.div = tk.IntVar(self.win, 50)
+        self.divmaj = tk.IntVar(self.win, 50)
 
         self.parlist += ["ri", "romaj", "romin", "a0", "a1", "div", "divmaj"]
 
@@ -901,14 +898,14 @@ class DrillMatrix(Baseclass, widgets.Widgets):  # ==============================
 
     def __init__(self, root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY):
         """Init variables and create widgets"""
-        self.win = super(DrillMatrix, self).__init__(root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY)
+        super(DrillMatrix, self).__init__(root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY)
 
-        self.nx = tk.IntVar(0, 5)
-        self.ny = tk.IntVar(0, 2)
-        self.dx = tk.DoubleVar(0, 2.54)
-        self.dy = tk.DoubleVar(0, 5.08)
-        self.peck = tk.BooleanVar(0, False)
-        self.center = tk.BooleanVar(0, True)
+        self.nx = tk.IntVar(self.win, 5)
+        self.ny = tk.IntVar(self.win, 2)
+        self.dx = tk.DoubleVar(self.win, 2.54)
+        self.dy = tk.DoubleVar(self.win, 5.08)
+        self.peck = tk.BooleanVar(self.win, False)
+        self.center = tk.BooleanVar(self.win, True)
 
         self.parlist += ["nx", "ny", "dx", "dy", "peck", "center"]
 
@@ -957,11 +954,11 @@ class Slot(Baseclass, widgets.Widgets):  # =====================================
 
     def __init__(self, root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY):
         """Init variables and create widgets"""
-        self.win = super(Slot, self).__init__(root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY)
+        super(Slot, self).__init__(root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY)
 
-        self.dx = tk.DoubleVar(0, 50)
-        self.dy = tk.DoubleVar(0, 50)
-        self.peck = tk.BooleanVar(0, False)
+        self.dx = tk.DoubleVar(self.win, 50.0)
+        self.dy = tk.DoubleVar(self.win, 50.0)
+        self.peck = tk.BooleanVar(self.win, False)
 
         self.parlist += ["dx", "dy", "peck"]
 
@@ -983,12 +980,12 @@ class PocketCircularArc(Baseclass, widgets.Widgets):  # ========================
 
     def __init__(self, root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY):
         """Init variables and create widgets"""
-        self.win = super(PocketCircularArc, self).__init__(root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY)
+        super(PocketCircularArc, self).__init__(root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY)
 
-        self.ri = tk.DoubleVar(0, 25)
-        self.ro = tk.DoubleVar(0, 50)
-        self.a0 = tk.DoubleVar(0)
-        self.a1 = tk.DoubleVar(0, 90)
+        self.ri = tk.DoubleVar(self.win, 25.0)
+        self.ro = tk.DoubleVar(self.win, 50.0)
+        self.a0 = tk.DoubleVar(self.win, 0.0)
+        self.a1 = tk.DoubleVar(self.win, 90.0)
 
         self.parlist += ["ri", "ro", "a0", "a1"]
 
@@ -1013,25 +1010,23 @@ class OutlineCircularArc(Baseclass, widgets.Widgets):  # =======================
         """Init variables and create widgets"""
         super(OutlineCircularArc, self).__init__(root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY)
 
-        self.root = root
-
-        self.ri = tk.DoubleVar(self.root, 25.0)
-        self.ro = tk.DoubleVar(self.root, 50.0)
-        self.a0 = tk.DoubleVar(self.root, 0.0)
-        self.a1 = tk.DoubleVar(self.root, 90.0)
-        self.contour = tk.IntVar(self.root, 1)
-        # self.climb = tk.BooleanVar(0, True)
-        self.br = tk.BooleanVar(self.root, True)
-        self.brw = tk.DoubleVar(self.root, 2)
-        self.brh = tk.DoubleVar(self.root, 1)
+        self.ri = tk.DoubleVar(self.win, 25.0)
+        self.ro = tk.DoubleVar(self.win, 50.0)
+        self.a0 = tk.DoubleVar(self.win, 0.0)
+        self.a1 = tk.DoubleVar(self.win, 90.0)
+        self.contour = tk.IntVar(self.win, 1)
+        # self.climb = tk.BooleanVar(self.win, True)
+        self.br = tk.BooleanVar(self.win, True)
+        self.brw = tk.DoubleVar(self.win, 2)
+        self.brh = tk.DoubleVar(self.win, 1)
 
         self.parlist += ["ri", "ro", "a0", "a1", "contour", "br", "brw", "brh"]
 
-        self.LabelEntry(self.root, 4, 3, 1, 10, self.ri, "Inner radius", "mm,in")
-        self.LabelEntry(self.root, 4, 4, 1, 10, self.ro, "Outer radius", "mm,in")
-        self.LabelEntry(self.root, 4, 5, 1, 10, self.a0, "Start angle", "°")
-        self.LabelEntry(self.root, 4, 6, 1, 10, self.a1, "End angle", "°")
-        wi.Radiobuttons(self.root, self.contour, "Contour", [["inside", ""], ["exact", ""], ["outside", ""]], columns=1, column=4, row=7)
+        self.LabelEntry(self.win, 4, 3, 1, 10, self.ri, "Inner radius", "mm,in")
+        self.LabelEntry(self.win, 4, 4, 1, 10, self.ro, "Outer radius", "mm,in")
+        self.LabelEntry(self.win, 4, 5, 1, 10, self.a0, "Start angle", "°")
+        self.LabelEntry(self.win, 4, 6, 1, 10, self.a1, "End angle", "°")
+        wi.Radiobuttons(self.win, self.contour, "Contour", [["inside", ""], ["exact", ""], ["outside", ""]], columns=1, column=4, row=7)
         # self.Optionbutton(self.win, 4, 10, 1, self.br, "Bridges", "tbd")
         # self.entry_brw = self.LabelEntry(self.win, 4, 11, 1, 10, self.brw, "Bridges width", "mm,in")
         # self.entry_brh = self.LabelEntry(self.win, 4, 12, 1, 10, self.brh, "Bridges height", "mm,in")
@@ -1042,7 +1037,7 @@ class OutlineCircularArc(Baseclass, widgets.Widgets):  # =======================
     def WriteDataToLogic(self):
         """Update the ncclass with the data from the gui"""
         self.WriteBaseDataToLogic()
-        self.after = self.root.after(TIME_UPDATE, self.WriteDataToLogic)
+        self.after = self.win.after(TIME_UPDATE, self.WriteDataToLogic)
 
 
 class Text(Baseclass, widgets.Widgets):  # =====================================
@@ -1050,21 +1045,21 @@ class Text(Baseclass, widgets.Widgets):  # =====================================
 
     def __init__(self, root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY):
         """Init variables and create widgets"""
-        self.win = super(Text, self).__init__(root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY)
+        super(Text, self).__init__(root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY)
 
-        self.fontfile = tk.StringVar(0, "")
-        self.arcres = tk.DoubleVar(0, 10)
-        self.char_height = tk.DoubleVar(0, 10)
-        self.char_width = tk.DoubleVar(0, 10)
-        self.char_space = tk.DoubleVar(0, 100)
-        self.line_space = tk.DoubleVar(0, 10)
-        # self.parsed = tk.BooleanVar(0, False)
-        self.mirrorh = tk.BooleanVar(0, False)
-        self.mirrorv = tk.BooleanVar(0, False)
-        self.arcjust = tk.IntVar(0)
-        self.g64 = tk.DoubleVar(0)
-        self.align = tk.IntVar(0, 0)
-        self.radius = tk.DoubleVar(0, 50)
+        self.fontfile = tk.StringVar(self.win, "")
+        self.arcres = tk.DoubleVar(self.win, 10.0)
+        self.char_height = tk.DoubleVar(self.win, 10.0)
+        self.char_width = tk.DoubleVar(self.win, 10.0)
+        self.char_space = tk.DoubleVar(self.win, 100.0)
+        self.line_space = tk.DoubleVar(self.win, 10.0)
+        # self.parsed = tk.BooleanVar(self.win, False)
+        self.mirrorh = tk.BooleanVar(self.win, False)
+        self.mirrorv = tk.BooleanVar(self.win, False)
+        self.arcjust = tk.IntVar(self.win, 0)
+        self.g64 = tk.DoubleVar(self.win, 0,0)
+        self.align = tk.IntVar(self.win, 0)
+        self.radius = tk.DoubleVar(self.win, 50.0)
 
         self.parlist += ["fontfile", "arcres", "char_height", "char_width", "char_space", "line_space", "mirrorh", "mirrorv", "arcjust", "g64", "align", "radius"]
 
@@ -1125,12 +1120,12 @@ class Relief(Baseclass, widgets.Widgets):  # ===================================
 
     def __init__(self, root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY):
         """Init variables and create widgets"""
-        self.win = super(Relief, self).__init__(root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY)
+        super(Relief, self).__init__(root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY)
 
-        self.fn_image = tk.StringVar(0, "")
-        self.image_width = tk.IntVar(0)
-        self.image_height = tk.IntVar(0)
-        self.scale = tk.DoubleVar(0)
+        self.fn_image = tk.StringVar(self.win, "")
+        self.image_width = tk.IntVar(self.win, 0)
+        self.image_height = tk.IntVar(self.win, 0)
+        self.scale = tk.DoubleVar(self.win, 0.0)
         self.image = None
 
         self.parlist += ["fn_image", "scale"]
@@ -1288,12 +1283,12 @@ class Counterbore(Baseclass):  # =========================================
     def __init__(self, root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY):
         """Init variables and create widgets"""
 
-        self.win = super(Counterbore, self).__init__(root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY)
+        super(Counterbore, self).__init__(root, ncclass_instance, winoffsetx=WINPOSX, winoffsety=WINPOSY)
 
-        self.d = tk.DoubleVar(0, 0)
-        self.d1 = tk.DoubleVar(0, 0)
-        self.T = tk.DoubleVar(0, 0)
-        self.t = tk.DoubleVar(0, 0)
+        self.d = tk.DoubleVar(self.win, 0.0)
+        self.d1 = tk.DoubleVar(self.win, 0.0)
+        self.T = tk.DoubleVar(self.win, 0.0)
+        self.t = tk.DoubleVar(self.win, 0.0)
         self.index_dt = 0
 
         self.parlist += ["d", "d1", "T", "t"]
